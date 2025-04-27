@@ -40,6 +40,8 @@ authRoutes.post("/verify-email", verifyEmailController);
 
 authRoutes.post("/customer-registration", registerAsCustomerController);
 
+// authRoutes.post("/customer-additional-info", CustomerAdditionalInfoController);
+
 authRoutes.post("/seller-registration", registerAsSellerController);
 
 export default authRoutes;

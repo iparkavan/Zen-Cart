@@ -9,6 +9,8 @@ import productRoutes from "./routes/product.routes";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 import cookieSession from "cookie-session";
 import passport from "passport";
+import userRoutes from "./routes/user.routes";
+import { isAuthenticated } from "./middlewares/isAuthenticated.middleware";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -39,6 +41,7 @@ app.use(
 );
 
 app.use(`${BASE_PATH}/auth`, authRoutes);
+app.use(`${BASE_PATH}/user`, isAuthenticated, userRoutes);
 app.use(`${BASE_PATH}/product`, productRoutes);
 
 app.use(errorHandler);

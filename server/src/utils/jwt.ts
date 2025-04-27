@@ -20,9 +20,12 @@ export const generateToken = (user: JwtPayload): string => {
 };
 
 // Utility function to verify a JWT token
-export const verifyToken = (token: string): JwtPayload | null => {
+export const verifyToken = (
+  token: string,
+  JWT_SECRET: string
+): JwtPayload | null => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    const decoded = jwt.verify(token, JWT_SECRET as string);
     return decoded as JwtPayload;
   } catch (error) {
     return null;

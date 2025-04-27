@@ -8,6 +8,7 @@ import {
   verifyEmailService,
 } from "../services/auth.services";
 import {
+  customerAdditionalInfoSchema,
   registerAsCustomerSchema,
   registerAsSellerSchema,
   verifyEmailSchema,
@@ -106,6 +107,20 @@ export const registerAsCustomerController: ExpressHandler = asyncHandler(
     });
   }
 );
+
+// export const CustomerAdditionalInfoController: ExpressHandler = asyncHandler(
+//   async (req, res, next) => {
+//     const body = customerAdditionalInfoSchema.parse({ ...req.body });
+
+//     await customerAdditionalInfoService(body);
+
+//     return res.status(HTTPSTATUS.CREATED).json({
+//       message: "User created successfully",
+//       user,
+//       access_token,
+//     });
+//   }
+// );
 
 export const registerAsSellerController: ExpressHandler = asyncHandler(
   async (req, res, next) => {
