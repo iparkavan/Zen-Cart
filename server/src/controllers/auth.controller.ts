@@ -6,7 +6,7 @@ import {
   registerAsCustomerService,
   registerAsSellerService,
   verifyEmailService,
-} from "../services/auth.services";
+} from "../services/auth.service";
 import {
   customerAdditionalInfoSchema,
   registerAsCustomerSchema,

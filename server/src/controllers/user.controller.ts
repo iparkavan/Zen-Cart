@@ -1,7 +1,7 @@
 import { ExpressHandler } from "../@types/express.types";
 import { HTTPSTATUS } from "../config/http.config";
 import { asyncHandler } from "../middlewares/asyncHandler.middleware";
-import { fetchCurrentUserService } from "../services/user.services";
+import { fetchCurrentUserService } from "../services/user.service";
 // import { fetchCurrentUserService } from "../services/user.service";
 
 export const getCurrentUserController: ExpressHandler = asyncHandler(

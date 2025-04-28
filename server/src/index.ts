@@ -42,7 +42,7 @@ app.use(
 
 app.use(`${BASE_PATH}/auth`, authRoutes);
 app.use(`${BASE_PATH}/user`, isAuthenticated, userRoutes);
-app.use(`${BASE_PATH}/product`, productRoutes);
+app.use(`${BASE_PATH}/products`, isAuthenticated, productRoutes);
 
 app.use(errorHandler);
 
