@@ -45,6 +45,7 @@ export const loginController: ExpressHandler = asyncHandler(
   async (req, res, next) => {
     passport.authenticate(
       "local",
+      { session: false },
       (
         err: Error | null,
         user: Express.User | false,
@@ -60,15 +61,15 @@ export const loginController: ExpressHandler = asyncHandler(
           });
         }
 
-        req.logIn(user, (err) => {
-          if (err) {
-            return next(err);
-          }
+        const token = generateToken({
+          userId: (user as any)._id.toString(),
+          role: (user as any).role.name,
+        });
 
-          return res.status(HTTPSTATUS.OK).json({
-            message: "Logged in successfully",
-            user,
-          });
+        return res.status(HTTPSTATUS.OK).json({
+          message: "Logged in successfully",
+          user,
+          access_token: token,
         });
       }
     )(req, res, next);
@@ -77,19 +78,10 @@ export const loginController: ExpressHandler = asyncHandler(
 
 export const logoutController: ExpressHandler = asyncHandler(
   async (req, res, next) => {
-    req.logout((err) => {
-      if (err) {
-        console.log("Logout error", err);
-        return res
-          .status(HTTPSTATUS.INTERNAL_SERVER_ERROR)
-          .json({ error: "failed to log out" });
-      }
+    return res.status(HTTPSTATUS.OK).json({
+      message:
+        "Successfully logged out. Please remove the token on client side.",
     });
-
-    req.session = null;
-    return res
-      .status(HTTPSTATUS.OK)
-      .json({ message: "Successfully logged out" });
   }
 );
 

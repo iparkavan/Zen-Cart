@@ -6,6 +6,7 @@ import {
   RoleType,
 } from "../enums/role.enum";
 import { RolePermissions } from "../utils/roles-permissions";
+import { removeMongoFields } from "../utils/remove-mongo-fields";
 
 export interface RoleDocument extends Document {
   name: RoleType;
@@ -31,6 +32,8 @@ const roleSchema = new Schema<RoleDocument>(
   },
   {
     timestamps: true,
+    toJSON: removeMongoFields,
+    toObject: removeMongoFields,
   }
 );
 

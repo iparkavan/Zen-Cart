@@ -31,7 +31,7 @@ passport.use(
           throw new NotFoundException("Google ID (sub) is missing");
         }
 
-        const { user, access_token } = await loginOrCreateAccountService({
+        const { user } = await loginOrCreateAccountService({
           provider: ProviderEnum.GOOGLE,
           displayName: profile.displayName,
           providerId: googleId,
@@ -58,12 +58,7 @@ passport.use(
       try {
         const user = await verifyUserService({ email, password });
 
-        const token = generateToken({
-          userId: user._id as string,
-          role: (user.role as any)?.name,
-        });
-
-        return done(null, { ...(user as any), access_token: token });
+        return done(null, { ...(user as any) });
       } catch (error: any) {
         return done(error, false, { message: error?.message });
       }

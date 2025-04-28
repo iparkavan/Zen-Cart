@@ -37,7 +37,7 @@ export const verifyUserService = async ({
     throw new NotFoundException("Invalid email or password");
   }
 
-  const user = await UserModel.findById(account.userId);
+  const user = await UserModel.findById(account.userId).populate("role");
 
   if (!user) {
     throw new NotFoundException("User not found for the given account Id");
