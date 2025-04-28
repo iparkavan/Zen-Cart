@@ -22,6 +22,36 @@ export const verifyEmailService = async (body: { email: string }) => {
   }
 };
 
+export const verifyUserService = async ({
+  email,
+  password,
+  provider = ProviderEnum.EMAIL,
+}: {
+  email: string;
+  password: string;
+  provider?: string;
+}) => {
+  const account = await AccountModel.findOne({ provider, providerId: email });
+
+  if (!account) {
+    throw new NotFoundException("Invalid email or password");
+  }
+
+  const user = await UserModel.findById(account.userId);
+
+  if (!user) {
+    throw new NotFoundException("User not found for the given account Id");
+  }
+
+  const isMatch = await user.comparePassword(password);
+
+  if (!isMatch) {
+    throw new UnauthorizedException("Invalid email or password");
+  }
+
+  return user.omitPassword();
+};
+
 export const registerAsCustomerService = async (body: {
   name: string;
   email: string;
@@ -250,14 +280,14 @@ export const loginOrCreateAccountService = async (data: {
       throw new NotFoundException("User not found after creation");
     }
 
-    const token = generateToken({
-      userId: user._id as string,
-      role: populatedRoleUser?.role.name,
-    });
+    // const token = generateToken({
+    //   userId: user._id as string,
+    //   role: populatedRoleUser?.role.name,
+    // });
 
     return {
       user: populatedRoleUser.omitPassword(),
-      access_token: token,
+      // access_token: token,
     };
   } catch (error) {
     await session.abortTransaction();

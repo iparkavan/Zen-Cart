@@ -13,18 +13,31 @@ import {
   registerAsSellerSchema,
   verifyEmailSchema,
 } from "../validations/auth.validations.schema";
+import UserModel from "../models/user.model";
+import { generateToken } from "../utils/jwt";
+import { RoleType } from "../enums/role.enum";
 
 export const googleLoginCallback = asyncHandler(async (req, res, next) => {
   // After successful authentication, we receive the user and token
-  const { user, access_token } = req.user as {
-    user: any;
-    access_token: string;
-  };
+  const user = req.user;
+
+  if (!user) {
+    return res
+      .status(HTTPSTATUS.BAD_REQUEST)
+      .json({ message: "User not found after Google login" });
+  }
+
+  // console.log()
+
+  const token = generateToken({
+    userId: (user as any)?._id as string,
+    role: user?.role as RoleType,
+  });
 
   res.json({
     message: "Authentication successful",
     user,
-    access_token,
+    access_token: token,
   });
 });
 

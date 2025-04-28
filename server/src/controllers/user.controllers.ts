@@ -16,7 +16,7 @@ export const getCurrentUserController: ExpressHandler = asyncHandler(
 
     const { user } = await fetchCurrentUserService(userId);
     return res.status(HTTPSTATUS.OK).json({
-      message: "User fetched Successfully",
+      message: "Current User fetched Successfully",
       user,
     });
   }

@@ -7,7 +7,11 @@ import { Request } from "express";
 import { Roles } from "../enums/role.enum";
 import { NotFoundException } from "../utils/app-error";
 import { ProviderEnum } from "../enums/account-provider.enum";
-import { loginOrCreateAccountService } from "../services/auth.services";
+import {
+  loginOrCreateAccountService,
+  verifyUserService,
+} from "../services/auth.services";
+import { generateToken } from "../utils/jwt";
 
 // Passport Google OAuth Strategy
 passport.use(
@@ -35,7 +39,7 @@ passport.use(
           email,
         });
 
-        done(null, { user, access_token });
+        done(null, user);
       } catch (error) {
         done(error, false);
       }
@@ -43,20 +47,26 @@ passport.use(
   )
 );
 
-// passport.use(
-//   new LocalStrategy(
-//     {
-//       usernameField: "email",
-//       passwordField: "password",
-//       session: false,
-//     },
-//     async (email, password, done) => {
-//       try {
-//         const user = await verifyUserService({ email, password });
-//         return done(null, user);
-//       } catch (error: any) {
-//         return done(error, false, { message: error?.message });
-//       }
-//     }
-//   )
-// );
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: "email",
+      passwordField: "password",
+      session: false,
+    },
+    async (email, password, done) => {
+      try {
+        const user = await verifyUserService({ email, password });
+
+        const token = generateToken({
+          userId: user._id as string,
+          role: (user.role as any)?.name,
+        });
+
+        return done(null, { ...(user as any), access_token: token });
+      } catch (error: any) {
+        return done(error, false, { message: error?.message });
+      }
+    }
+  )
+);

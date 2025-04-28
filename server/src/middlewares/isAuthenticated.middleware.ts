@@ -1,7 +1,7 @@
+// src/middlewares/isAuthenticated.middleware.ts
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import { config } from "../config/app.config";
 import { verifyToken } from "../utils/jwt";
+import { config } from "../config/app.config";
 import { HTTPSTATUS } from "../config/http.config";
 
 export const isAuthenticated = async (
@@ -15,7 +15,7 @@ export const isAuthenticated = async (
     res
       .status(HTTPSTATUS.UNAUTHORIZED)
       .json({ message: "Unauthorized: No token provided" });
-    return; // important! stop execution here
+    return;
   }
 
   const token = authHeader.split(" ")[1];
@@ -23,23 +23,22 @@ export const isAuthenticated = async (
   try {
     const decoded = verifyToken(token, config.JWT_SECRET);
 
-    if (!decoded) {
+    if (!decoded || typeof decoded !== "object") {
       res
         .status(HTTPSTATUS.UNAUTHORIZED)
         .json({ message: "Unauthorized: Invalid token" });
-      return; // stop execution if decoded is null
+      return;
     }
 
-    // console.log(decoded.role, decoded.userId);
-
     req.user = {
-      userId: decoded.userId,
-      role: decoded.role,
+      userId: (decoded as any).userId,
+      role: (decoded as any).role,
     };
 
-    next(); // ✅ continue to next middleware
+    next(); // ✅ allow to proceed
   } catch (error) {
-    res.status(401).json({ message: "Unauthorized: Invalid or expired token" });
-    return; // again important
+    res
+      .status(HTTPSTATUS.UNAUTHORIZED)
+      .json({ message: "Unauthorized: Invalid or expired token" });
   }
 };

@@ -1,10 +1,10 @@
-import { UserRoleEnum } from "../../enums/role.enum"; // if you have enums, otherwise hardcode string
+import { RoleType } from "../enums/role.enum";
 
 declare global {
   namespace Express {
     interface User {
-      userId: string;
-      role: UserRoleEnum; // or role: UserRoleEnum if you want stronger typing
+      userId: string; // Added userId property
+      role: RoleType;
     }
   }
 }
