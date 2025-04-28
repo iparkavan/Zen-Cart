@@ -32,7 +32,7 @@ export const isAuthenticated = async (
 
     req.user = {
       userId: (decoded as any).userId,
-      role: (decoded as any).role.name,
+      role: (decoded as any).role,
     };
 
     next(); // ✅ allow to proceed
