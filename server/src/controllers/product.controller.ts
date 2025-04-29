@@ -4,8 +4,12 @@ import { asyncHandler } from "../middlewares/asyncHandler.middleware";
 import {
   createProductService,
   getAllProductsService,
+  updateProductService,
 } from "../services/product.service";
-import { createProductSchema } from "../validations/product.validations.schema";
+import {
+  createProductSchema,
+  updateProductSchema,
+} from "../validations/product.validations.schema";
 
 export const createProductController: ExpressHandler = asyncHandler(
   async (req, res, next) => {
@@ -15,15 +19,41 @@ export const createProductController: ExpressHandler = asyncHandler(
       });
     }
 
-    // const { userId } = req?.user;
+    const { userId: sellerId } = req?.user;
 
     const body = createProductSchema.parse({ ...req.body });
 
-    const { product } = await createProductService(body);
+    const { product } = await createProductService(body, sellerId);
 
     res.status(HTTPSTATUS.CREATED).json({
       message: "Product created successfully",
       product,
+    });
+  }
+);
+
+export const updateProductController: ExpressHandler = asyncHandler(
+  async (req, res) => {
+    if (!req.user) {
+      return res.status(HTTPSTATUS.UNAUTHORIZED).json({
+        message: "User not authenticated",
+      });
+    }
+
+    const { productId } = req.params;
+    const { userId: sellerId } = req.user;
+
+    const body = updateProductSchema.parse(req.body);
+
+    const updatedProduct = await updateProductService(
+      productId,
+      sellerId,
+      body
+    );
+
+    return res.status(HTTPSTATUS.OK).json({
+      message: "Product updated successfully",
+      product: updatedProduct,
     });
   }
 );

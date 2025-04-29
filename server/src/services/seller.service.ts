@@ -13,5 +13,7 @@ export const validateSellerById = async (sellerId: string) => {
     throw new UnauthorizedException("Provided id does not belong to a seller.");
   }
 
+  console.log("seller.role.name", seller.role.name);
+
   return seller;
 };

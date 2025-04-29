@@ -1,12 +1,20 @@
-import { ICreateProductTypes } from "../@types/product.types";
+import { Types } from "mongoose";
+import {
+  ICreateProductTypes,
+  IUpdateProductTypes,
+} from "../@types/product.types";
 import CategoryModel from "../models/category.model";
 import ProductModel from "../models/product.model";
+import { NotFoundException } from "../utils/app-error";
 
 import { validateSellerById } from "./seller.service";
 
-export const createProductService = async (body: ICreateProductTypes) => {
+export const createProductService = async (
+  body: ICreateProductTypes,
+  sellerId: string
+) => {
   const {
-    sellerId,
+    // sellerId,
     title,
     description,
     originalPrice,
@@ -56,6 +64,46 @@ export const createProductService = async (body: ICreateProductTypes) => {
   await newProduct.save();
 
   return { product: newProduct };
+};
+
+export const updateProductService = async (
+  productId: string,
+  sellerId: string,
+  data: IUpdateProductTypes
+) => {
+  await validateSellerById(sellerId); // Authorization
+
+  const product = await ProductModel.findById(productId);
+
+  if (!product) {
+    throw new NotFoundException("Product not found");
+  }
+
+  // Optional category update
+  if (data.categoryName) {
+    let category = await CategoryModel.findOne({ name: data.categoryName });
+
+    if (!category) {
+      category = new CategoryModel({
+        name: data.categoryName,
+        slug: data.categoryName.toLowerCase().replace(/\s+/g, "-"),
+      });
+
+      await category.save();
+    }
+
+    product.category = category._id as Types.ObjectId;
+  }
+
+  // Update other fields
+  Object.assign(product, {
+    ...data,
+    category: product.category, // Ensure category is maintained
+  });
+
+  await product.save();
+
+  return product;
 };
 
 export const getAllProductsService = async ({

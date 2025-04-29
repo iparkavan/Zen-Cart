@@ -3,7 +3,7 @@ import { makeFieldsOptional } from "../utils/make-fields-optional";
 
 // 1. Define the base/common fields separately
 const productFields = {
-  sellerId: z.string().min(1, "Seller ID is required"),
+  // sellerId: z.string().min(1, "Seller ID is required"),
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   originalPrice: z.number().positive("Original price must be positive"),
