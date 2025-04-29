@@ -1,38 +1,44 @@
 import { Request, Response, NextFunction } from "express";
 import UserModel from "../models/user.model";
+import { HTTPSTATUS } from "../config/http.config";
+import { Roles } from "../enums/role.enum";
 
 export const validateSeller = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
-    const sellerId = req.body.sellerId;
-
-    if (!sellerId) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Seller ID is required" });
+    if (!req.user) {
+      res.status(HTTPSTATUS.UNAUTHORIZED).json({
+        message: "User not authenticated",
+      });
+      return;
     }
 
-    const seller = await UserModel.findById(sellerId);
+    const { userId: sellerId } = req.user;
+
+    const seller = await UserModel.findById(sellerId).populate("role");
 
     if (!seller) {
-      return res
-        .status(404)
+      res
+        .status(HTTPSTATUS.NOT_FOUND)
         .json({ success: false, message: "Seller not found" });
+      return;
     }
 
-    if (seller.role !== "seller") {
-      return res
-        .status(403)
+    if (seller.role.name !== Roles.SELLER) {
+      res
+        .status(HTTPSTATUS.FORBIDDEN)
         .json({ success: false, message: "Provided user is not a seller" });
+      return;
     }
 
-    // ✅ Seller validated, continue
     next();
   } catch (error) {
     console.error("Error in validateSeller middleware:", error);
-    res.status(500).json({ success: false, message: "Server Error" });
+    res
+      .status(HTTPSTATUS.INTERNAL_SERVER_ERROR)
+      .json({ success: false, message: "Server Error" });
   }
 };

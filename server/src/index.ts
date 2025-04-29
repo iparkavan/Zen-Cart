@@ -11,6 +11,7 @@ import cookieSession from "cookie-session";
 import passport from "passport";
 import userRoutes from "./routes/user.routes";
 import { isAuthenticated } from "./middlewares/isAuthenticated.middleware";
+import { validateSeller } from "./middlewares/validateSeller.middleware";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;

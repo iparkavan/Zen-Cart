@@ -6,7 +6,13 @@ import { createProductSchema } from "../validations/product.validations.schema";
 
 export const createProductController: ExpressHandler = asyncHandler(
   async (req, res, next) => {
-    console.log("It worked");
+    if (!req.user) {
+      return res.status(HTTPSTATUS.UNAUTHORIZED).json({
+        message: "User not authenticated",
+      });
+    }
+
+    // const { userId } = req?.user;
 
     const body = createProductSchema.parse({ ...req.body });
 

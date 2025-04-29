@@ -1,9 +1,13 @@
 import { ICreateProductTypes } from "../@types/product.types";
+import { Roles } from "../enums/role.enum";
 import CategoryModel from "../models/category.model";
 import ProductModel, { IProduct } from "../models/product.model";
+import UserModel from "../models/user.model";
+import { NotFoundException, UnauthorizedException } from "../utils/app-error";
 
 export const createProductService = async (body: ICreateProductTypes) => {
   const {
+    sellerId,
     title,
     description,
     originalPrice,
@@ -19,6 +23,16 @@ export const createProductService = async (body: ICreateProductTypes) => {
     returnPolicy,
   } = body;
 
+  const seller = await UserModel.findById(sellerId).populate("role");
+
+  if (!seller) {
+    throw new NotFoundException("Seller is not found");
+  }
+
+  if (seller.role.name !== Roles.SELLER) {
+    throw new UnauthorizedException("Provided id is not a seller.");
+  }
+
   let category = await CategoryModel.findOne({ name: categoryName });
 
   if (!category) {
@@ -31,7 +45,7 @@ export const createProductService = async (body: ICreateProductTypes) => {
   }
 
   const newProduct = new ProductModel({
-    sellerId: body.sellerId,
+    sellerId,
     title,
     description,
     originalPrice,

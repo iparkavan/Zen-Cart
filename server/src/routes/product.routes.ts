@@ -10,7 +10,6 @@ const productRoutes = Router();
 productRoutes.post(
   `/create`,
   checkPermission([Permissions.CREATE_PRODUCT]),
-  // validateSeller,
   createProductController
 );
 
