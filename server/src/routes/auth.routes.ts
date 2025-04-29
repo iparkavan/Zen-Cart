@@ -6,7 +6,7 @@ import {
   registerAsCustomerController,
   registerAsSellerController,
   verifyEmailController,
-} from "../controllers/auth.controllers";
+} from "../controllers/auth.controller";
 import passport from "passport";
 import { config } from "../config/app.config";
 
