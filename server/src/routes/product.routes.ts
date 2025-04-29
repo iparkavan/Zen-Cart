@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { createProductController } from "../controllers/product.controller";
+import {
+  createProductController,
+  getAllProductsController,
+} from "../controllers/product.controller";
 import { checkPermission } from "../middlewares/check-permission.middleware";
 import { RolePermissions } from "../utils/roles-permissions";
 import { Permissions } from "../enums/role.enum";
@@ -12,5 +15,7 @@ productRoutes.post(
   checkPermission([Permissions.CREATE_PRODUCT]),
   createProductController
 );
+
+productRoutes.get(`/all`, getAllProductsController);
 
 export default productRoutes;

@@ -8,7 +8,7 @@ export interface IProduct extends Document {
   originalPrice: number;
   offerPrice?: number;
   discountPercentage?: number;
-  categoryId: Types.ObjectId; // Reference to the Category model
+  category: Types.ObjectId; // Reference to the Category model
   brand: string;
   images: string[];
   stock: number;
@@ -39,7 +39,7 @@ const productSchema = new Schema<IProduct>(
     originalPrice: { type: Number, required: true },
     offerPrice: { type: Number }, // optional discount price
     discountPercentage: { type: Number }, // optional, can be auto-calculated too
-    categoryId: {
+    category: {
       type: Schema.Types.ObjectId,
       ref: "Category",
       required: true,

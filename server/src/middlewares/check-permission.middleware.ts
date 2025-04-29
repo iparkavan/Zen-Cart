@@ -6,6 +6,7 @@ import { hasPermission } from "../utils/has-permission";
 export const checkPermission = (requiredPermissions: PermissionType[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const user = req.user;
+    console.log(user);
 
     if (!user || !user.role) {
       throw new UnauthorizedException("Forbidden. No user role found.");

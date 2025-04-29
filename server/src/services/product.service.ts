@@ -1,10 +1,7 @@
-import { validate } from "uuid";
 import { ICreateProductTypes } from "../@types/product.types";
-import { Roles } from "../enums/role.enum";
 import CategoryModel from "../models/category.model";
-import ProductModel, { IProduct } from "../models/product.model";
-import UserModel from "../models/user.model";
-import { NotFoundException, UnauthorizedException } from "../utils/app-error";
+import ProductModel from "../models/product.model";
+
 import { validateSellerById } from "./seller.service";
 
 export const createProductService = async (body: ICreateProductTypes) => {
@@ -44,7 +41,7 @@ export const createProductService = async (body: ICreateProductTypes) => {
     description,
     originalPrice,
     offerPrice,
-    categoryId: category._id,
+    category: category._id,
     brand,
     images,
     stock,
@@ -59,4 +56,26 @@ export const createProductService = async (body: ICreateProductTypes) => {
   await newProduct.save();
 
   return { product: newProduct };
+};
+
+export const getAllProductsService = async ({
+  page,
+  limit,
+}: {
+  page: number;
+  limit: number;
+}) => {
+  const totalCount = await ProductModel.estimatedDocumentCount();
+
+  const skip = (page - 1) * limit;
+
+  const products = await ProductModel.find()
+    .skip(skip)
+    .limit(limit)
+    .populate("category")
+    .sort({ createdAt: -1 });
+
+  const totalPages = Math.ceil(totalCount / limit);
+
+  return { totalCount, products, totalPages, skip };
 };
