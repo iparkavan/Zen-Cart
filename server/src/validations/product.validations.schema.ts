@@ -39,3 +39,8 @@ export const createProductSchema = z.object(productFields);
 
 // 3. Create the update schema (all fields are optional in update)
 export const updateProductSchema = z.object(makeFieldsOptional(productFields));
+
+export const productIdSchema = z
+  .string()
+  .trim()
+  .min(1, "Product Id is required");

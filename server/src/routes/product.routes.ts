@@ -1,7 +1,9 @@
 import { Router } from "express";
 import {
   createProductController,
+  deleteProductByIdController,
   getAllProductsController,
+  getProductByIdController,
   updateProductController,
 } from "../controllers/product.controller";
 import { checkPermission } from "../middlewares/check-permission.middleware";
@@ -23,6 +25,22 @@ productRoutes.put(
   updateProductController
 );
 
-productRoutes.get(`/all`, getAllProductsController);
+productRoutes.get(
+  `/all`,
+  checkPermission([Permissions.VIEW_PRODUCTS]),
+  getAllProductsController
+);
+
+productRoutes.get(
+  `/:productId`,
+  checkPermission([Permissions.VIEW_PRODUCTS]),
+  getProductByIdController
+);
+
+productRoutes.delete(
+  `/delete/:productId`,
+  checkPermission([Permissions.DELETE_PRODUCT]),
+  deleteProductByIdController
+);
 
 export default productRoutes;

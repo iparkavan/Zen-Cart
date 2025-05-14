@@ -14,7 +14,6 @@ export const getCurrentUserController: ExpressHandler = asyncHandler(
 
     const { userId, role } = req.user;
 
-    console.log("Current User", userId, role);
     const { user } = await fetchCurrentUserService(userId);
     return res.status(HTTPSTATUS.OK).json({
       message: "Current User fetched Successfully",

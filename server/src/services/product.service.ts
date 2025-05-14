@@ -127,3 +127,23 @@ export const getAllProductsService = async ({
 
   return { totalCount, products, totalPages, skip };
 };
+
+export const getProductByIdService = async (productId: string) => {
+  const product = await ProductModel.findById(productId);
+
+  if (!product) {
+    throw new NotFoundException("Product not found");
+  }
+
+  return { product };
+};
+
+export const deleteProductByIdService = async (productId: string) => {
+  const product = await ProductModel.findByIdAndDelete(productId);
+
+  if (!product) {
+    throw new NotFoundException("Product not found");
+  }
+
+  return { product };
+};

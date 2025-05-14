@@ -3,11 +3,14 @@ import { HTTPSTATUS } from "../config/http.config";
 import { asyncHandler } from "../middlewares/asyncHandler.middleware";
 import {
   createProductService,
+  deleteProductByIdService,
   getAllProductsService,
+  getProductByIdService,
   updateProductService,
 } from "../services/product.service";
 import {
   createProductSchema,
+  productIdSchema,
   updateProductSchema,
 } from "../validations/product.validations.schema";
 
@@ -40,7 +43,7 @@ export const updateProductController: ExpressHandler = asyncHandler(
       });
     }
 
-    const { productId } = req.params;
+    const productId = productIdSchema.parse(req.params.productId);
     const { userId: sellerId } = req.user;
 
     const body = updateProductSchema.parse(req.body);
@@ -80,5 +83,28 @@ export const getAllProductsController: ExpressHandler = asyncHandler(
         skip,
       },
     });
+  }
+);
+
+export const getProductByIdController: ExpressHandler = asyncHandler(
+  async (req, res, next) => {
+    const productId = productIdSchema.parse(req.params.productId);
+
+    const { product } = await getProductByIdService(productId);
+
+    return res.status(HTTPSTATUS.OK).json({
+      message: "Product fetched successfully",
+      product,
+    });
+  }
+);
+
+export const deleteProductByIdController: ExpressHandler = asyncHandler(
+  async (req, res, next) => {
+    const productId = productIdSchema.parse(req.params.productId);
+
+    await deleteProductByIdService(productId);
+
+    res.status(HTTPSTATUS.OK).json({ message: "Product deleted successfully" });
   }
 );

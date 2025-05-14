@@ -27,8 +27,6 @@ export const googleLoginCallback = asyncHandler(async (req, res, next) => {
       .json({ message: "User not found after Google login" });
   }
 
-  // console.log()
-
   const token = generateToken({
     userId: (user as any)?._id as string,
     role: user?.role as RoleType,
