@@ -49,7 +49,7 @@ export const createProductService = async (
     description,
     originalPrice,
     offerPrice,
-    category: category._id,
+    categoryId: category._id,
     brand,
     images,
     stock,
@@ -92,13 +92,13 @@ export const updateProductService = async (
       await category.save();
     }
 
-    product.category = category._id as Types.ObjectId;
+    product.categoryId = category._id as Types.ObjectId;
   }
 
   // Update other fields
   Object.assign(product, {
     ...data,
-    category: product.category, // Ensure category is maintained
+    category: product.categoryId, // Ensure category is maintained
   });
 
   await product.save();
@@ -120,7 +120,7 @@ export const getAllProductsService = async ({
   const products = await ProductModel.find()
     .skip(skip)
     .limit(limit)
-    .populate("category")
+    .populate("categoryId")
     .sort({ createdAt: -1 });
 
   const totalPages = Math.ceil(totalCount / limit);
