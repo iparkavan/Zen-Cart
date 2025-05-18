@@ -40,12 +40,11 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ imageUrl }) => {
   console.log(imageUrl);
   return (
     <div className="flex flex-col gap-4">
-      <div className="relative flex items-center justify-center">
+      <div className="relative">
         <div
-          className="absolute left-5 z-20 text-gray-500 drop-shadow-sm active:drop-shadow-xl cursor-pointer rounded-full transition-all duration-300 active:ring-2 ring-gray-500"
+          className="absolute left-5 top-38 z-20 text-gray-500 drop-shadow-sm active:drop-shadow-xl cursor-pointer rounded-full transition-all duration-300 active:ring-2 ring-gray-500"
           onClick={handleLeft}
         >
-          {/* <LeftArrowCircle size={25} /> */}
           <ChevronLeftCircleIcon />
         </div>
         <div className="relative flex overflow-hidden">
@@ -67,10 +66,9 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ imageUrl }) => {
             ))}
         </div>
         <div
-          className="absolute right-5 z-20 active:drop-shadow-xl text-gray-500 drop-shadow-sm cursor-pointer rounded-full transition-all duration-300 active:ring-2 ring-gray-500"
+          className="absolute right-5 z-20 top-38 active:drop-shadow-xl text-gray-500 drop-shadow-sm cursor-pointer rounded-full transition-all duration-300 active:ring-2 ring-gray-500"
           onClick={handleRight}
         >
-          {/* <RightArrowCircle size={25} /> */}
           <ChevronRightCircle />
         </div>
       </div>

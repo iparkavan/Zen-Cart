@@ -1,4 +1,4 @@
-import { getCurrentUserQueryFn } from "@/apis/auth-apis";
+import { getCurrentUserQueryFn } from "@/apis/auth-api";
 import { useQuery } from "@tanstack/react-query";
 
 const useAuth = () => {

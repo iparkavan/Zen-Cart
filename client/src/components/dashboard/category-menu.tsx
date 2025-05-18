@@ -1,8 +1,14 @@
+"use client";
+
+import { useGetAllCategory } from "@/hooks/category-hooks";
 import { MenuIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-const CategoryProducts = () => {
+const CategoryMenu = () => {
+  const { data, isPending } = useGetAllCategory();
+  const categories = data?.categories;
+
   return (
     <div className="h-full flex items-center gap-4 px-6">
       <Link
@@ -12,7 +18,16 @@ const CategoryProducts = () => {
         <MenuIcon />
         All
       </Link>
-      <Link href="/category/electronics" className="hover:text-amazon-orange">
+      {categories?.map((category, index) => (
+        <Link
+          key={category._id}
+          href={`/category/${category.slug}`}
+          className="hover:text-amazon-orange"
+        >
+          {category.name}
+        </Link>
+      ))}
+      {/* <Link href="/category/electronics" className="hover:text-amazon-orange">
         Electronics
       </Link>
       <Link href="/category/computers" className="hover:text-amazon-orange">
@@ -35,9 +50,9 @@ const CategoryProducts = () => {
       </Link>
       <Link href="/category/fashion" className="hover:text-amazon-orange">
         Fashion
-      </Link>
+      </Link> */}
     </div>
   );
 };
 
-export default CategoryProducts;
+export default CategoryMenu;

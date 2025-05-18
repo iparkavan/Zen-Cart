@@ -1,7 +1,12 @@
 import { Router } from "express";
-import { getCategoryByIdController } from "../controllers/category.controller";
+import {
+  getAllCategoryController,
+  getCategoryByIdController,
+} from "../controllers/category.controller";
 
 const categoryRoutes = Router();
+
+categoryRoutes.get(`/all`, getAllCategoryController);
 
 categoryRoutes.get(`/filter/:categoryId`, getCategoryByIdController);
 

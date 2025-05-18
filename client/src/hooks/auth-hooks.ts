@@ -1,4 +1,4 @@
-import { signinMutationFn, signupMutationFn } from "@/apis/auth-apis";
+import { signinMutationFn, signupMutationFn } from "@/apis/auth-api";
 import { useMutation } from "@tanstack/react-query";
 
 export const useSignin = () => {
