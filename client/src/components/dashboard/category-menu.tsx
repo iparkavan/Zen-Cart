@@ -9,10 +9,12 @@ const CategoryMenu = () => {
   const { data, isPending } = useGetAllCategory();
   const categories = data?.categories;
 
+  console.log(categories);
+
   return (
     <div className="h-full flex items-center gap-4 px-6">
       <Link
-        href="/category/all"
+        href="/category?ref=all"
         className="hover:text-amazon-orange flex items-center gap-1"
       >
         <MenuIcon />

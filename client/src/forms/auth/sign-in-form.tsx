@@ -16,6 +16,7 @@ import { IFormDataType } from "@/schema/auth-schema";
 import { useSignin } from "@/hooks/auth-hooks";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export function SigninForm({
   className,
@@ -47,7 +48,14 @@ export function SigninForm({
       onSuccess: (data) => {
         console.log("data", data);
         if (data) {
-          localStorage.setItem("token", data.access_token);
+          // ✅ Set the token in a cookie
+          Cookies.set("token", data.access_token, {
+            expires: 7, // 7 days
+            path: "/",
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Lax",
+          });
+
           router.push(`/`);
         }
       },

@@ -64,7 +64,7 @@ export const updateProductController: ExpressHandler = asyncHandler(
 export const getAllProductsController: ExpressHandler = asyncHandler(
   async (req, res, next) => {
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const limit = parseInt(req.query.limit as string) || 50;
 
     const { products, totalCount, totalPages, skip } =
       await getAllProductsService({

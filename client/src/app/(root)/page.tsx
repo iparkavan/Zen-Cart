@@ -3,14 +3,11 @@ import CategorizedProducts from "@/components/dashboard/categorized-products";
 import CategoryMenu from "@/components/dashboard/category-menu";
 
 import DashboardCarousel from "@/components/dashboard/dashboard-carousel";
+import FeaturedProducts from "@/components/dashboard/feature-products";
 
 export default function Home() {
   return (
     <div className="relative">
-      <nav className="w-full h-16 sticky top-0 left-0 z-50 backdrop-blur-md bg-white/30 border-b  px-6">
-        <Navbar />
-      </nav>
-
       <section className="h-8 text-sm overflow-x-auto whitespace-nowrap">
         <CategoryMenu />
       </section>
@@ -24,7 +21,9 @@ export default function Home() {
           <CategorizedProducts />
         </section>
 
-        <div className="h-screen">Hi there</div>
+        <div className="h-screen">
+          <FeaturedProducts />
+        </div>
       </div>
     </div>
   );
