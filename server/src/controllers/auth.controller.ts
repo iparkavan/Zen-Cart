@@ -53,6 +53,8 @@ export const loginController: ExpressHandler = asyncHandler(
           return next(err);
         }
 
+        console.log("User authenticated:", user);
+
         if (!user) {
           return res.status(HTTPSTATUS.UNAUTHORIZED).json({
             message: info?.message || "Invalid email or password",

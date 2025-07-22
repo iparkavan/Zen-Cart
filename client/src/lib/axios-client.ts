@@ -25,16 +25,16 @@ axiosInstance.interceptors.request.use(
 
 // Optional: Response interceptor for handling 401
 axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const { response } = error;
-    if (response?.status === 401) {
-      if (typeof window !== "undefined") {
-        window.location.href = "/";
-      }
-    }
-    return Promise.reject(error);
-  }
+  (response) => response
+  // (error) => {
+  //   const { response } = error;
+  //   if (response?.status === 401) {
+  //     if (typeof window !== "undefined") {
+  //       window.location.href = "/signin";
+  //     }
+  //   }
+  //   return Promise.reject(error);
+  // }
 );
 
 export default axiosInstance;

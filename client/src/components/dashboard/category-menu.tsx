@@ -9,8 +9,6 @@ const CategoryMenu = () => {
   const { data, isPending } = useGetAllCategory();
   const categories = data?.categories;
 
-  console.log(categories);
-
   return (
     <div className="h-full flex items-center gap-4 px-6">
       <Link

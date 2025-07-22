@@ -25,7 +25,7 @@ productRoutes.put(
 
 productRoutes.get(
   `/all`,
-  checkPermission([Permissions.VIEW_PRODUCTS]),
+  // checkPermission([Permissions.VIEW_PRODUCTS]),
   getAllProductsController
 );
 

@@ -31,7 +31,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
         )} */}
 
-        <Link href={`/product/${product._id}`}>
+        <Link href={`/products/${product._id}`}>
           <div className="h-[200px] overflow-hidden bg-gray-50">
             <img
               src={product.images[0]}
@@ -43,7 +43,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </div>
 
       <CardContent className="flex-grow">
-        <Link href={`/product/${product._id}`}>
+        <Link href={`/products/${product._id}`}>
           <h3 className="font-medium line-clamp-2 mb-2 hover:text-amazon-blue">
             {product.title}
           </h3>

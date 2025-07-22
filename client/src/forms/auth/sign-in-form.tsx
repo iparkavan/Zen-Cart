@@ -15,7 +15,7 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { IFormDataType } from "@/schema/auth-schema";
 import { useSignin } from "@/hooks/auth-hooks";
 import { Loader } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
 
 export function SigninForm({
@@ -28,6 +28,9 @@ export function SigninForm({
   });
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const redirectTo = searchParams.get("redirect") || "/";
 
   const { mutate, isPending } = useSignin();
 
@@ -55,8 +58,7 @@ export function SigninForm({
             secure: process.env.NODE_ENV === "production",
             sameSite: "Lax",
           });
-
-          router.push(`/`);
+          router.push(redirectTo);
         }
       },
       onError: (error) => {

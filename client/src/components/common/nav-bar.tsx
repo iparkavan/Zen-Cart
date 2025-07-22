@@ -1,31 +1,16 @@
 "use client";
 
-// import React from "react";
-
-// const Navbar = () => {
-//   return (
-//     <div className="w-full flex items-center justify-between">
-//       <div className="text-xl font-bold">Logo</div>
-//       <ul className="flex gap-6 text-sm font-mediu">
-//         <li className="hover:text-blue-600 cursor-pointer">Home</li>
-//         <li className="hover:text-blue-600 cursor-pointer">Products</li>
-//         <li className="hover:text-blue-600 cursor-pointer">Contact</li>
-//       </ul>
-//       <div>User Info</div>
-//     </div>
-//   );
-// };
-
-// export default Navbar;
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ShoppingCart, Search, Menu, User, MapPin } from "lucide-react";
 import Link from "next/link";
+import { UserProfilePopover } from "../custom-ui/popover/user-profile-popover";
 
 const NavBar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfilePopoverOpen, setIsProfilePopoverOpen] =
+    useState<boolean>(false);
 
   return (
     <div className="h-full flex items-center justify-between">
@@ -69,16 +54,10 @@ const NavBar: React.FC = () => {
       <div>
         {/* Navigation Links */}
         <nav className="hidden md:flex items-center space-x-6">
-          <Link
-            href="/account"
-            className="text-sm hover:text-amazon-orange flex items-center"
-          >
-            <User size={18} className="mr-1" />
-            <div>
-              <div className="text-xs">Hello, Sign in</div>
-              <div className="font-bold">Account</div>
-            </div>
-          </Link>
+          <UserProfilePopover
+            isProfilePopoverOpen={isProfilePopoverOpen}
+            setIsProfilePopoverOpen={setIsProfilePopoverOpen}
+          />
 
           <Link href="/orders" className="text-sm hover:text-amazon-orange">
             <div className="text-xs">Returns</div>

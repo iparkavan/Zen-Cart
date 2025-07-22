@@ -25,12 +25,12 @@ export default function CommonLayout({
 }>) {
   return (
     <div>
-      <AuthProvider>
-        <nav className="w-full h-16 sticky top-0 left-0 z-50 backdrop-blur-md bg-white/30 border-b  px-6">
-          <NavBar />
-        </nav>
-        {children}
-      </AuthProvider>
+      {/* <AuthProvider> */}
+      <nav className="w-full h-16 sticky top-0 left-0 z-50 backdrop-blur-md bg-white/30 border-b px-6">
+        <NavBar />
+      </nav>
+      {children}
+      {/* </AuthProvider> */}
     </div>
   );
 }
