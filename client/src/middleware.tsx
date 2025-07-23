@@ -1,55 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  AUTH_ROUTES,
+  PROTECTED_ROUTES,
+  PUBLIC_PATHS,
+  RootRoute,
+  SignInRoute,
+} from "./lib/routes";
+import { jwtVerify } from "jose";
 import jwt from "jsonwebtoken";
 
-const PUBLIC_PATHS = [
-  "/signin",
-  "/signup",
-  "/",
-  "/products",
-  "/products/",
-  /^\/products\/[^/]+$/,
-];
+const isProtectedRoutes = (pathname: string) =>
+  PROTECTED_ROUTES.some((path) => pathname.startsWith(path));
 
-const AUTH_REQUIRED_PATHS = ["/cart", "/checkout", "/orders"];
+const isAuthRoutes = (pathname: string) =>
+  AUTH_ROUTES.some((path) => pathname.startsWith(path));
 
-const isPublicPath = (pathname: string) =>
-  PUBLIC_PATHS.some((path) =>
-    typeof path === "string" ? pathname === path : path.test(pathname)
-  );
+const verifyToken = async (token: string): Promise<any | null> => {
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+    console.log("JWT secret:", secret);
+    const { payload } = await jwtVerify(token, secret);
+    console.log("JWT payload:", payload);
+    return payload;
+  } catch (err) {
+    console.error("JWT verification failed:", err);
+    return null;
+  }
+};
 
-const isAuthRequiredPath = (pathname: string) =>
-  AUTH_REQUIRED_PATHS.some((path) => pathname.startsWith(path));
-
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
   const token = request.cookies.get("token")?.value;
+  const secret = process.env.JWT_SECRET!;
 
   // If the user is already logged in and visits /signin or /signup (directly)
-  if (
-    token &&
-    (pathname === "/signin" || pathname === "/signup") &&
-    !searchParams.get("redirect")
-  ) {
-    return NextResponse.redirect(new URL("/", request.url));
+  if (token && isAuthRoutes(pathname) && !searchParams.get("redirect")) {
+    return NextResponse.redirect(new URL(RootRoute, request.url));
   }
 
   // Protected routes
-  if (isAuthRequiredPath(pathname)) {
+  if (isProtectedRoutes(pathname)) {
     if (!token) {
-      const redirectUrl = new URL("/signin", request.url);
+      const redirectUrl = new URL(SignInRoute, request.url);
       redirectUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(redirectUrl);
     }
 
-    // try {
-    //   const secret = process.env.NEXT_PUBLIC_JWT_SECRET!;
-    //   jwt.verify(token, secret);
-    //   return NextResponse.next(); // valid token
-    // } catch {
-    //   const redirectUrl = new URL("/signin", request.url);
-    //   redirectUrl.searchParams.set("redirect", pathname);
-    //   return NextResponse.redirect(redirectUrl);
-    // }
+    const verified = await verifyToken(token);
+
+    if (!verified) {
+      const redirectUrl = new URL("/signin", request.url);
+      redirectUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
   }
 
   return NextResponse.next(); // everything else

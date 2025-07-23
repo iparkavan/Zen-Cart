@@ -53,8 +53,6 @@ export const loginController: ExpressHandler = asyncHandler(
           return next(err);
         }
 
-        console.log("User authenticated:", user);
-
         if (!user) {
           return res.status(HTTPSTATUS.UNAUTHORIZED).json({
             message: info?.message || "Invalid email or password",
@@ -65,6 +63,8 @@ export const loginController: ExpressHandler = asyncHandler(
           userId: (user as any)._id.toString(),
           role: (user as any).role.name,
         });
+
+        console.log("User authenticated via Google:", token);
 
         return res.status(HTTPSTATUS.OK).json({
           message: "Logged in successfully",
