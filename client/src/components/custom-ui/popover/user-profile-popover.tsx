@@ -6,19 +6,27 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { SignInRoute } from "@/lib/routes";
 import { User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
+import Cookies from "js-cookie";
 
 interface UserProfilePopoverProps {
   isProfilePopoverOpen: boolean;
   setIsProfilePopoverOpen: (open: boolean) => void;
 }
+
 export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   isProfilePopoverOpen,
   setIsProfilePopoverOpen,
 }) => {
   const router = useRouter();
+
+  const logoutHandler = () => {
+    Cookies.remove("token");
+    router.push(SignInRoute);
+  };
 
   return (
     <Popover open={isProfilePopoverOpen} onOpenChange={setIsProfilePopoverOpen}>
@@ -44,7 +52,7 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
               </p>
               <p
                 className="hover:underline hover:text-amber-600 cursor-pointer transition-all duration-300"
-                onClick={() => router.push("/signin")}
+                onClick={logoutHandler}
               >
                 Sign out
               </p>

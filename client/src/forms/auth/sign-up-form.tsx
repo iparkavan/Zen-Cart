@@ -45,7 +45,6 @@ export function SignUpForm({
 
     mutate(formData, {
       onSuccess: (data) => {
-        console.log("data", data);
         if (data) {
           router.push(`/`);
         }

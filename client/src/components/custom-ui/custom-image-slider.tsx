@@ -37,7 +37,6 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ imageUrl }) => {
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
-  console.log(imageUrl);
   return (
     <div className="flex flex-col gap-4">
       <div className="relative">

@@ -11,7 +11,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { data, isPending: isUserPending } = useAuth();
-  console.log("User", data);
 
   return (
     <AuthContext.Provider value={{ data }}>{children}</AuthContext.Provider>

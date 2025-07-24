@@ -64,8 +64,6 @@ export const loginController: ExpressHandler = asyncHandler(
           role: (user as any).role.name,
         });
 
-        console.log("User authenticated via Google:", token);
-
         return res.status(HTTPSTATUS.OK).json({
           message: "Logged in successfully",
           user,

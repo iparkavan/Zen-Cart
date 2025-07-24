@@ -49,9 +49,7 @@ export function SigninForm({
 
     mutate(formData, {
       onSuccess: (data) => {
-        console.log("data", data);
         if (data) {
-          // ✅ Set the token in a cookie
           Cookies.set("token", data.access_token, {
             expires: 7, // 7 days
             path: "/",

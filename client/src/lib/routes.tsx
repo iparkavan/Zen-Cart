@@ -1,4 +1,4 @@
-export const PROTECTED_ROUTES = ["/cart", "/checkout", "/orders"];
+export const PROTECTED_ROUTES = ["/checkout", "/orders"];
 
 export const PUBLIC_PATHS = [
   "/signin",
@@ -9,7 +9,7 @@ export const PUBLIC_PATHS = [
   /^\/products\/[^/]+$/,
 ];
 
-export const AUTH_ROUTES = ["/signin", "/signup"];
+export const AUTH_ROUTES = ["/signin", "/signup", "/business-register"];
 
 export const SignInRoute = "/signin";
 export const SignUpRoute = "/signup";

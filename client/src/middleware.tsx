@@ -18,12 +18,9 @@ const isAuthRoutes = (pathname: string) =>
 const verifyToken = async (token: string): Promise<any | null> => {
   try {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
-    console.log("JWT secret:", secret);
     const { payload } = await jwtVerify(token, secret);
-    console.log("JWT payload:", payload);
     return payload;
   } catch (err) {
-    console.error("JWT verification failed:", err);
     return null;
   }
 };
