@@ -1,3 +1,4 @@
+import RefreshWrapper from "@/common/refresh-wrapper";
 import NavBar from "@/components/common/nav-bar";
 import { AuthProvider } from "@/context/auth-provider";
 import type { Metadata } from "next";
@@ -26,10 +27,12 @@ export default function CommonLayout({
   return (
     <div>
       {/* <AuthProvider> */}
-      <nav className="w-full h-16 sticky top-0 left-0 z-50 backdrop-blur-md bg-white/30 border-b px-6">
-        <NavBar />
-      </nav>
-      {children}
+      <RefreshWrapper>
+        <nav className="w-full h-16 sticky top-0 left-0 z-50 backdrop-blur-md bg-white/30 border-b px-6">
+          <NavBar />
+        </nav>
+        {children}
+      </RefreshWrapper>
       {/* </AuthProvider> */}
     </div>
   );

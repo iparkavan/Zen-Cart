@@ -6,6 +6,10 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Star } from "lucide-react";
 import Link from "next/link";
 import { Product } from "@/types/product-types";
+import { useAddAndRemoveToCart } from "@/hooks/cart-hooks";
+import { useUserStore } from "@/stores/user-info-slice";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { SignInRoute } from "@/lib/routes";
 
 interface ProductCardProps {
   product: Product;
@@ -15,6 +19,31 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   // const discount = product.originalPrice
   //   ? Math.round((1 - product.price / product.originalPrice) * 100)
   //   : 0;
+
+  const { user } = useUserStore();
+  const router = useRouter();
+  const pathname = usePathname(); // current path without query
+  const searchParams = useSearchParams();
+
+  const { mutate: addAndRemoveToCartMutate } = useAddAndRemoveToCart();
+
+  const onAddToCartHandler = async () => {
+    if (!user?._id) {
+      const fullPath = `${pathname}${
+        searchParams ? `?${searchParams.toString()}` : ""
+      }`;
+      router.push(`${SignInRoute}?redirect=${fullPath}`);
+      console.log(user?._id, "user not logged in");
+      return;
+    } // Optionally, show a message to log in
+
+    addAndRemoveToCartMutate({
+      data: {
+        productId: product._id,
+        quantity: 1,
+      },
+    });
+  };
 
   return (
     <Card className="overflow-hidden h-full flex flex-col p-0 transition-shadow hover:shadow-md">
@@ -83,7 +112,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </CardContent>
 
       <CardFooter className="pt-2 pb-4">
-        <Button className="w-full bg-primary hover:bg-amazon-orange">
+        <Button onClick={onAddToCartHandler} className="w-full">
           <ShoppingCart size={16} className="mr-2" />
           Add to Cart
         </Button>

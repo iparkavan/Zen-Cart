@@ -17,6 +17,7 @@ import { useSignin } from "@/hooks/auth-hooks";
 import { Loader } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
+import { useUserStore } from "@/stores/user-info-slice";
 
 export function SigninForm({
   className,
@@ -26,6 +27,8 @@ export function SigninForm({
     email: "",
     password: "",
   });
+
+  const { setUser } = useUserStore();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -50,12 +53,10 @@ export function SigninForm({
     mutate(formData, {
       onSuccess: (data) => {
         if (data) {
-          Cookies.set("token", data.access_token, {
-            expires: 7, // 7 days
-            path: "/",
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "Lax",
-          });
+          Cookies.set("token", data.access_token);
+
+          setUser(data.user);
+
           router.push(redirectTo);
         }
       },

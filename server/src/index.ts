@@ -13,6 +13,7 @@ import userRoutes from "./routes/user.routes";
 import { isAuthenticated } from "./middlewares/isAuthenticated.middleware";
 import { validateSeller } from "./middlewares/validateSeller.middleware";
 import categoryRoutes from "./routes/category.routes";
+import cartRoutes from "./routes/cart.routes";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -43,9 +44,14 @@ app.use(
 );
 
 app.use(`${BASE_PATH}/auth`, authRoutes);
+
 app.use(`${BASE_PATH}/user`, isAuthenticated, userRoutes);
+
 app.use(`${BASE_PATH}/products`, productRoutes);
+
 app.use(`${BASE_PATH}/category`, categoryRoutes);
+
+app.use(`${BASE_PATH}/cart`, isAuthenticated, cartRoutes);
 
 app.use(errorHandler);
 

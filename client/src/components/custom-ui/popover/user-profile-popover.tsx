@@ -11,6 +11,7 @@ import { User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import Cookies from "js-cookie";
+import { useUserStore } from "@/stores/user-info-slice";
 
 interface UserProfilePopoverProps {
   isProfilePopoverOpen: boolean;
@@ -22,8 +23,10 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   setIsProfilePopoverOpen,
 }) => {
   const router = useRouter();
+  const { clearUser } = useUserStore();
 
   const logoutHandler = () => {
+    clearUser();
     Cookies.remove("token");
     router.push(SignInRoute);
   };

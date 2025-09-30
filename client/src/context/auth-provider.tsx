@@ -1,6 +1,6 @@
 "use client";
 
-import useAuth from "@/hooks/api/useAuth";
+import useCurrentUserInfo from "@/hooks/api/useAuth";
 import React, { createContext, useContext } from "react";
 
 type IAuthContext = {};
@@ -10,7 +10,7 @@ const AuthContext = createContext<IAuthContext | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { data, isPending: isUserPending } = useAuth();
+  const { data, isPending: isUserPending } = useCurrentUserInfo();
 
   return (
     <AuthContext.Provider value={{ data }}>{children}</AuthContext.Provider>
