@@ -17,7 +17,8 @@ import { useSignin } from "@/hooks/auth-hooks";
 import { Loader } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
-import { useUserStore } from "@/stores/user-info-slice";
+import { useUserStore } from "@/stores/user-info-store";
+import { mergeGuestCartIntoBackend } from "@/hooks/cart-hook-logic/cart-logic-hooks";
 
 export function SigninForm({
   className,
@@ -51,11 +52,12 @@ export function SigninForm({
     if (isPending) return;
 
     mutate(formData, {
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         if (data) {
           Cookies.set("token", data.access_token);
 
           setUser(data.user);
+          await mergeGuestCartIntoBackend(data.user._id);
 
           router.push(redirectTo);
         }

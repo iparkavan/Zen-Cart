@@ -1,7 +1,7 @@
 "use client";
 
 import useCurrentUserInfo from "@/hooks/api/useAuth";
-import { useUserStore } from "@/stores/user-info-slice";
+import { useUserStore } from "@/stores/user-info-store";
 import React, { useEffect } from "react";
 
 const RefreshWrapper = ({ children }: { children: React.ReactNode }) => {

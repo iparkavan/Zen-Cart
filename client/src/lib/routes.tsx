@@ -1,4 +1,4 @@
-export const PROTECTED_ROUTES = ["/checkout", "/orders", "/cart"];
+export const PROTECTED_ROUTES = ["/checkout", "/orders"];
 
 export const PUBLIC_PATHS = [
   "/signin",

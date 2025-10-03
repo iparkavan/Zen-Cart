@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { ShoppingCart, ArrowLeft } from "lucide-react";
-import { CartItem } from "@/types/cart";
 import { CartItemCard } from "@/components/cart/cart-item-card";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,7 +13,9 @@ import {
   useDeleteCartItem,
   useGetAllCartItems,
 } from "@/hooks/cart-hooks";
-import { useUserStore } from "@/stores/user-info-slice";
+import { useUserStore } from "@/stores/user-info-store";
+import { useRemoveItemWithGuest } from "@/hooks/cart-hook-logic/cart-logic-hooks";
+import { useGuestCartStore } from "@/stores/cart-info-store";
 // import { useToast } from "@/hooks/use-toast";
 
 const Cart = () => {
@@ -22,29 +23,44 @@ const Cart = () => {
   const { user } = useUserStore();
   const router = useRouter();
   const { data } = useGetAllCartItems();
+  // const { addItem } = useCartInfoStore();
+  // const {} = useAddToCartWithGuest();
 
-  const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
+  const { items: guestCartItems } = useGuestCartStore();
+
+  // const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
 
   const { mutate: addAndRemoveToCartMutate } = useAddAndRemoveToCart();
 
-  const { mutate: deleteMutate, isPending: isDeletePending } =
-    useDeleteCartItem();
+  // const { mutate: deleteMutate, isPending: isDeletePending } =
+  //   useDeleteCartItem();
 
-  const cartItems = data?.cartItems;
+  const {
+    deleteItemFromTheCart,
+    isPending: isDeletePending,
+    deletingItemId,
+  } = useRemoveItemWithGuest();
+
+  const cartItems = user?._id ? data?.cartItems : guestCartItems;
+
+  console.log(data?.cartItems);
+  console.log(data?.cartItems);
 
   const handleRemoveItem = (id: string) => {
-    setDeletingItemId(id);
-    deleteMutate(id, {
-      onSettled: () => {
-        setDeletingItemId(null);
-      },
-    });
+    deleteItemFromTheCart(id);
   };
 
   const onUpdateQuantity = (id: string, quantity: number) => {
-    addAndRemoveToCartMutate({
-      data: { productId: id, quantity },
-    });
+    if (user?._id) {
+      addAndRemoveToCartMutate({
+        data: { productId: id, quantity },
+      });
+      console.log(id, quantity, "updating cart item");
+    } else {
+      console.log(id, quantity, "adding to guest cart");
+
+      // addItem({ productId: id, quantity });
+    }
   };
 
   const subtotal =
@@ -101,65 +117,75 @@ const Cart = () => {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <h2 className="text-xl font-semibold mb-4">Cart Items</h2>
-              {cartItems &&
-                cartItems.map((item) => (
-                  <CartItemCard
-                    key={item._id}
-                    item={item.productId}
-                    quantity={item.quantity}
-                    isDeletePending={
-                      isDeletePending && deletingItemId === item.productId._id
-                    }
-                    onUpdateQuantity={onUpdateQuantity}
-                    onRemoveItem={handleRemoveItem}
-                  />
-                ))}
-            </div>
+          <>
+            {cartItems && cartItems.length > 0 && (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                  <h2 className="text-xl font-semibold mb-4">Cart Items</h2>
+                  {cartItems &&
+                    cartItems.map((item) => (
+                      <CartItemCard
+                        key={item._id}
+                        item={item.productId}
+                        quantity={item.quantity}
+                        isDeletePending={
+                          isDeletePending &&
+                          deletingItemId === item.productId._id
+                        }
+                        onUpdateQuantity={onUpdateQuantity}
+                        onRemoveItem={handleRemoveItem}
+                      />
+                    ))}
+                </div>
 
-            <div className="lg:col-span-1">
-              <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-              <Card>
-                <CardHeader>
-                  <CardTitle></CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between">
-                    <span>Subtotal ({itemCount} items)</span>
-                    <span>${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Shipping</span>
-                    <span>
-                      {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Tax</span>
-                    <span>${tax.toFixed(2)}</span>
-                  </div>
-                  {/* <Separator /> */}
-                  <div className="flex justify-between text-lg font-semibold">
-                    <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
-                  </div>
-                  {subtotal < 100 && (
-                    <p className="text-sm text-muted-foreground">
-                      Add ${(100 - subtotal).toFixed(2)} more for free shipping!
-                    </p>
-                  )}
-                  <Button className="w-full" size="lg" onClick={handleCheckout}>
-                    Proceed to Checkout
-                  </Button>
-                  <p className="text-xs text-muted-foreground text-center">
-                    Secure checkout with SSL encryption
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+                <div className="lg:col-span-1">
+                  <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle></CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex justify-between">
+                        <span>Subtotal ({itemCount} items)</span>
+                        <span>${subtotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Shipping</span>
+                        <span>
+                          {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Tax</span>
+                        <span>${tax.toFixed(2)}</span>
+                      </div>
+                      {/* <Separator /> */}
+                      <div className="flex justify-between text-lg font-semibold">
+                        <span>Total</span>
+                        <span>${total.toFixed(2)}</span>
+                      </div>
+                      {subtotal < 100 && (
+                        <p className="text-sm text-muted-foreground">
+                          Add ${(100 - subtotal).toFixed(2)} more for free
+                          shipping!
+                        </p>
+                      )}
+                      <Button
+                        className="w-full"
+                        size="lg"
+                        onClick={handleCheckout}
+                      >
+                        Proceed to Checkout
+                      </Button>
+                      <p className="text-xs text-muted-foreground text-center">
+                        Secure checkout with SSL encryption
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

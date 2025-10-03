@@ -7,7 +7,7 @@ import CategoryMenu from "@/components/dashboard/category-menu";
 import DashboardCarousel from "@/components/dashboard/dashboard-carousel";
 import FeaturedProducts from "@/components/dashboard/feature-products";
 import { useAuthContext } from "@/context/auth-provider";
-import { useUserStore } from "@/stores/user-info-slice";
+import { useUserStore } from "@/stores/user-info-store";
 
 export default function Home() {
   const { user } = useUserStore();
