@@ -14,8 +14,8 @@ import {
   useGetAllCartItems,
 } from "@/hooks/cart-hooks";
 import { useUserStore } from "@/stores/user-info-store";
-import { useRemoveItemWithGuest } from "@/hooks/cart-hook-logic/cart-logic-hooks";
 import { useGuestCartStore } from "@/stores/cart-info-store";
+import { useRemoveItemWithCart } from "@/hooks/cart-hook-logic/cart-logic-hooks";
 // import { useToast } from "@/hooks/use-toast";
 
 const Cart = () => {
@@ -39,28 +39,14 @@ const Cart = () => {
     deleteItemFromTheCart,
     isPending: isDeletePending,
     deletingItemId,
-  } = useRemoveItemWithGuest();
+    setDeletingItemId,
+  } = useRemoveItemWithCart();
 
   const cartItems = user?._id ? data?.cartItems : guestCartItems;
 
-  console.log(data?.cartItems);
-  console.log(data?.cartItems);
-
   const handleRemoveItem = (id: string) => {
+    setDeletingItemId(id);
     deleteItemFromTheCart(id);
-  };
-
-  const onUpdateQuantity = (id: string, quantity: number) => {
-    if (user?._id) {
-      addAndRemoveToCartMutate({
-        data: { productId: id, quantity },
-      });
-      console.log(id, quantity, "updating cart item");
-    } else {
-      console.log(id, quantity, "adding to guest cart");
-
-      // addItem({ productId: id, quantity });
-    }
   };
 
   const subtotal =
@@ -132,7 +118,7 @@ const Cart = () => {
                           isDeletePending &&
                           deletingItemId === item.productId._id
                         }
-                        onUpdateQuantity={onUpdateQuantity}
+                        // onUpdateQuantity={onUpdateQuantity}
                         onRemoveItem={handleRemoveItem}
                       />
                     ))}

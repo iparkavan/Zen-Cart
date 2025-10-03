@@ -1,4 +1,4 @@
-// hooks/useAddToCartWithGuest.ts
+// hooks/useAddToCartWithCart.ts
 
 import { useGuestCartStore } from "@/stores/cart-info-store";
 import { useUserStore } from "@/stores/user-info-store";
@@ -23,7 +23,7 @@ export const mergeGuestCartIntoBackend = async (userId: string) => {
   useGuestCartStore.getState().clear();
 };
 
-export const useAddToCartWithGuest = () => {
+export const useAddToCartWithCart = () => {
   const { user } = useUserStore();
   const guestCart = useGuestCartStore();
   const { mutate, isPending } = useAddAndRemoveToCart();
@@ -44,7 +44,7 @@ export const useAddToCartWithGuest = () => {
   };
 };
 
-export const useRemoveItemWithGuest = () => {
+export const useRemoveItemWithCart = () => {
   const { user } = useUserStore();
   const guestCart = useGuestCartStore();
   const { mutate, isPending } = useDeleteCartItem();
@@ -65,6 +65,49 @@ export const useRemoveItemWithGuest = () => {
   return {
     deleteItemFromTheCart,
     isPending,
+    setDeletingItemId,
     deletingItemId,
+  };
+};
+
+export const useIncrementItemWithCart = () => {
+  const { user } = useUserStore();
+  const guestCart = useGuestCartStore();
+  const { mutate, isPending } = useAddAndRemoveToCart();
+
+  const incrementCartItem = (product: CartItem, quantity = 1) => {
+    if (user) {
+      // Logged in → backend
+      mutate({ data: { productId: product._id, quantity } });
+    } else {
+      // Guest → local storage
+      guestCart.incrementItem(product._id);
+    }
+  };
+
+  return {
+    incrementCartItem,
+    isPending,
+  };
+};
+
+export const useDecrementItemWithCart = () => {
+  const { user } = useUserStore();
+  const guestCart = useGuestCartStore();
+  const { mutate, isPending } = useAddAndRemoveToCart();
+
+  const decrementCartItem = (product: CartItem, quantity = -1) => {
+    if (user) {
+      // Logged in → backend
+      mutate({ data: { productId: product._id, quantity } });
+    } else {
+      // Guest → local storage
+      guestCart.decrementItem(product._id);
+    }
+  };
+
+  return {
+    decrementCartItem,
+    isPending,
   };
 };

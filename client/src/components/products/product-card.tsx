@@ -10,7 +10,7 @@ import { useAddAndRemoveToCart } from "@/hooks/cart-hooks";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SignInRoute } from "@/lib/routes";
 import { useUserStore } from "@/stores/user-info-store";
-import { useAddToCartWithGuest } from "@/hooks/cart-hook-logic/cart-logic-hooks";
+import { useAddToCartWithCart } from "@/hooks/cart-hook-logic/cart-logic-hooks";
 // import { useCartInfoStore } from "@/stores/cart-info-store";
 
 interface ProductCardProps {
@@ -22,7 +22,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   //   ? Math.round((1 - product.price / product.originalPrice) * 100)
   //   : 0;
 
-  const { addItemToCart, isPending } = useAddToCartWithGuest();
+  const { addItemToCart, isPending } = useAddToCartWithCart();
 
   const { user } = useUserStore();
   const router = useRouter();

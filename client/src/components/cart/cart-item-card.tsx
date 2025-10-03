@@ -1,5 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  useDecrementItemWithCart,
+  useIncrementItemWithCart,
+} from "@/hooks/cart-hook-logic/cart-logic-hooks";
 import { CartItem } from "@/types/cart";
 import { Product } from "@/types/product-types";
 import { Loader, Minus, Plus, Trash2 } from "lucide-react";
@@ -8,7 +12,7 @@ interface CartItemCardProps {
   item: Product;
   quantity: number;
   isDeletePending: boolean;
-  onUpdateQuantity: (id: string, quantity: number) => void;
+  // onUpdateQuantity: (id: string, quantity: number) => void;
   onRemoveItem: (id: string) => void;
 }
 
@@ -17,8 +21,11 @@ export const CartItemCard = ({
   quantity,
   onRemoveItem,
   isDeletePending,
-  onUpdateQuantity,
-}: CartItemCardProps) => {
+}: // onUpdateQuantity,
+CartItemCardProps) => {
+  const { incrementCartItem } = useIncrementItemWithCart();
+  const { decrementCartItem } = useDecrementItemWithCart();
+
   return (
     <Card className="mb-2">
       <CardContent className="">
@@ -43,7 +50,13 @@ export const CartItemCard = ({
             <Button
               variant="outline"
               size="icon"
-              onClick={() => onUpdateQuantity(item._id, -1)}
+              onClick={() =>
+                decrementCartItem({
+                  _id: item._id,
+                  productId: item,
+                  quantity: -1,
+                })
+              }
               className="h-8 w-8"
             >
               <Minus className="h-4 w-4" />
@@ -52,7 +65,13 @@ export const CartItemCard = ({
             <Button
               variant="outline"
               size="icon"
-              onClick={() => onUpdateQuantity(item._id, 1)}
+              onClick={() =>
+                incrementCartItem({
+                  _id: item._id,
+                  productId: item,
+                  quantity: 1,
+                })
+              }
               className="h-8 w-8"
             >
               <Plus className="h-4 w-4" />

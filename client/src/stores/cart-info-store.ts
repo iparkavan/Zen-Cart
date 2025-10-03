@@ -3,17 +3,12 @@ import { CartItem } from "@/types/cart-type";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface GuestCartItem {
-  productId: string;
-  title: string;
-  price: number;
-  quantity: number;
-}
-
 interface GuestCartState {
   items: CartItem[];
   addItem: (item: CartItem) => void;
   removeItem: (productId: string) => void;
+  incrementItem: (productId: string) => void;
+  decrementItem: (productId: string) => void;
   clear: () => void;
 }
 
@@ -32,9 +27,31 @@ export const useGuestCartStore = create<GuestCartState>()(
           set({ items: [...items, { ...item, quantity }] });
         }
       },
+
       removeItem: (productId) =>
         set({ items: get().items.filter((i) => i._id !== productId) }),
+
       clear: () => set({ items: [] }),
+
+      incrementItem: (productId) => {
+        const items = get().items.map((item) =>
+          item._id === productId
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+        set({ items });
+      },
+
+      decrementItem: (productId) => {
+        const items = get()
+          .items.map((item) =>
+            item._id === productId
+              ? { ...item, quantity: item.quantity - 1 }
+              : item
+          )
+          .filter((item) => item.quantity > 0);
+        set({ items });
+      },
     }),
     { name: "guest-cart" } // saves in localStorage
   )
