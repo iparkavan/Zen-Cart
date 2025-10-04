@@ -23,7 +23,7 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
   setIsProfilePopoverOpen,
 }) => {
   const router = useRouter();
-  const { clearUser } = useUserStore();
+  const { clearUser, user } = useUserStore();
 
   const logoutHandler = () => {
     clearUser();
@@ -40,8 +40,10 @@ export const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({
         >
           <User size={18} className="mr-1" />
           <div>
-            <div className="text-xs">Hello, Sign in</div>
-            <div className="font-bold">Account</div>
+            <div className="text-xs">
+              Hello, {user?._id ? user.email : "Sign in"}
+            </div>
+            <div className="font-bold">Account & Lists</div>
           </div>
         </div>
       </PopoverTrigger>

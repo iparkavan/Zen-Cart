@@ -6,11 +6,14 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Star } from "lucide-react";
 import Link from "next/link";
 import { Product } from "@/types/product-types";
-import { useAddAndRemoveToCart } from "@/hooks/cart-hooks";
+import { useAddAndRemoveToCart, useGetAllCartItems } from "@/hooks/cart-hooks";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SignInRoute } from "@/lib/routes";
 import { useUserStore } from "@/stores/user-info-store";
 import { useAddToCartWithCart } from "@/hooks/cart-hook-logic/cart-logic-hooks";
+import { useGuestCartStore } from "@/stores/cart-info-store";
+import { CartItem } from "@/types/cart-type";
+import CartItemQuantityButtons from "../cart/ui/cart-item-quantity-buttons";
 // import { useCartInfoStore } from "@/stores/cart-info-store";
 
 interface ProductCardProps {
@@ -23,11 +26,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   //   : 0;
 
   const { addItemToCart, isPending } = useAddToCartWithCart();
+  const { items: guestCartItems } = useGuestCartStore();
+  const { data: cartItemsFromDb } = useGetAllCartItems();
 
   const { user } = useUserStore();
   const router = useRouter();
   const pathname = usePathname(); // current path without query
   const searchParams = useSearchParams();
+
+  const cartItems = user?._id ? cartItemsFromDb?.cartItems : guestCartItems;
+
+  const cartItem =
+    cartItems && cartItems.find((item) => item.productId._id === product._id);
 
   // const { addItem, removeItem, incrementCartItem, decrementCartItem } =
   //   useCartInfoStore();
@@ -135,17 +145,48 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </CardContent>
 
       <CardFooter className="pt-2 pb-4">
-        <Button
-          // onClick={onAddToCartHandler}
-          // onClick={() => addToCartHandler(product._id)}
-          onClick={() =>
-            addItemToCart({ _id: product._id, productId: product, quantity: 1 })
-          }
-          className="w-full"
-        >
-          <ShoppingCart size={16} className="mr-2" />
-          Add to Cart
-        </Button>
+        {cartItems && cartItems.length > 0 ? (
+          <>
+            {cartItem ? (
+              <div className="w-full flex items-center justify-center">
+                <CartItemQuantityButtons
+                  item={cartItem.productId}
+                  quantity={cartItem.quantity}
+                />
+              </div>
+            ) : (
+              <Button
+                onClick={() =>
+                  addItemToCart({
+                    _id: product._id,
+                    productId: product,
+                    quantity: 1,
+                  })
+                }
+                className="w-full cursor-pointer"
+              >
+                <ShoppingCart size={16} className="mr-2" />
+                Add to Cart
+              </Button>
+            )}
+          </>
+        ) : (
+          <Button
+            // onClick={onAddToCartHandler}
+            // onClick={() => addToCartHandler(product._id)}
+            onClick={() =>
+              addItemToCart({
+                _id: product._id,
+                productId: product,
+                quantity: 1,
+              })
+            }
+            className="w-full cursor-pointer"
+          >
+            <ShoppingCart size={16} className="mr-2" />
+            Add to Cart
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

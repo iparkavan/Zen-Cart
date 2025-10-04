@@ -6,8 +6,16 @@ import { Input } from "@/components/ui/input";
 import { ShoppingCart, Search, Menu, User, MapPin } from "lucide-react";
 import Link from "next/link";
 import { UserProfilePopover } from "../custom-ui/popover/user-profile-popover";
+import { useUserStore } from "@/stores/user-info-store";
+import { useGuestCartStore } from "@/stores/cart-info-store";
+import { useGetAllCartItems } from "@/hooks/cart-hooks";
 
 const NavBar: React.FC = () => {
+  const { items: guestCartItems } = useGuestCartStore();
+  const { user } = useUserStore();
+
+  const { data: cartItems } = useGetAllCartItems();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfilePopoverOpen, setIsProfilePopoverOpen] =
     useState<boolean>(false);
@@ -71,7 +79,9 @@ const NavBar: React.FC = () => {
             <div className="relative">
               <ShoppingCart size={24} />
               <span className="absolute -top-2 -right-2 bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                0
+                {user?._id
+                  ? cartItems?.cartItems.length
+                  : guestCartItems.length}
               </span>
             </div>
             <span className="ml-1 font-bold">Cart</span>

@@ -10,8 +10,6 @@ import { useAuthContext } from "@/context/auth-provider";
 import { useUserStore } from "@/stores/user-info-store";
 
 export default function Home() {
-  const { user } = useUserStore();
-
   return (
     <div className="relative">
       <section className="h-8 text-sm overflow-x-auto whitespace-nowrap">
@@ -21,8 +19,6 @@ export default function Home() {
       <section>
         <DashboardCarousel />
       </section>
-
-      <section>{user?.email}</section>
 
       <div className="absolute w-full top-[300px] z-10">
         <section>
