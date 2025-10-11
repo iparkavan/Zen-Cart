@@ -39,15 +39,15 @@ export async function middleware(request: NextRequest) {
   if (isProtectedRoutes(pathname)) {
     if (!token) {
       const redirectUrl = new URL(SignInRoute, request.url);
-      redirectUrl.searchParams.set("redirect", pathname);
+      redirectUrl.searchParams.set("redir", pathname);
       return NextResponse.redirect(redirectUrl);
     }
 
     const verified = await verifyToken(token);
 
     if (!verified) {
-      const redirectUrl = new URL("/signin", request.url);
-      redirectUrl.searchParams.set("redirect", pathname);
+      const redirectUrl = new URL(SignInRoute, request.url);
+      redirectUrl.searchParams.set("redir", pathname);
       return NextResponse.redirect(redirectUrl);
     }
   }
@@ -58,26 +58,3 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
-
-// export function middleware(request: NextRequest) {
-//   const { nextUrl } = request;
-//   const token = request.cookies.get("token")?.value;
-
-//   const isToken = !!token;
-
-//   console.log("Middleware token:", isToken, nextUrl.pathname);
-
-//   const isPublicPath =
-//     (PUBLIC_PATHS.find((route) => nextUrl.pathname.startsWith(route)) ||
-//       nextUrl.pathname === "/") &&
-//     !AUTH_REQUIRED_PATHS.find((route) => nextUrl.pathname.startsWith(route));
-
-//   console.log("Is public path:", isPublicPath);
-
-//   if (!isToken && !isPublicPath) {
-//     console.log("No token found, redirecting to /signin");
-//     return NextResponse.redirect(new URL("/signin", nextUrl));
-//   }
-
-//   return NextResponse.next();
-// }

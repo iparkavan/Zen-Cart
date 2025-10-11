@@ -11,7 +11,7 @@ import AccountModel from "../models/account.model";
 import RoleModel from "../models/roles-permissions.model";
 import { generateToken } from "../utils/jwt";
 
-export const verifyEmailService = async (body: { email: string }) => {
+export const isEmailExistService = async (body: { email: string }) => {
   const { email } = body;
 
   try {

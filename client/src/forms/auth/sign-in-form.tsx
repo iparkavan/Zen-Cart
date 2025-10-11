@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { IFormDataType } from "@/schema/auth-schema";
-import { useSignin } from "@/hooks/auth-hooks";
+import { useIsEmailExist, useSignin } from "@/hooks/auth-hooks";
 import { Loader } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
@@ -24,63 +24,98 @@ export function SigninForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [formData, setFormData] = useState<IFormDataType>({
-    email: "",
-    password: "",
-  });
+  // const [formData, setFormData] = useState<IFormDataType>({
+  //   email: "",
+  //   password: "",
+  // });
+
+  const [email, setEmail] = useState("");
 
   const { setUser } = useUserStore();
 
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const redirectTo = searchParams.get("redirect") || "/";
+  const redirectTo = searchParams.get("redir") || "/";
 
-  const { mutate, isPending } = useSignin();
+  // const { mutate, isPending } = useSignin();
+
+  const { mutate: isEmailExistMutate, isPending: isEmailExistPending } =
+    useIsEmailExist();
 
   const handleSigninChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    // const { name, value } = e.target;
+    setEmail(e.target.value);
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    if (isPending) return;
+    if (isEmailExistPending) return;
 
-    mutate(formData, {
-      onSuccess: async (data) => {
-        if (data) {
-          Cookies.set("token", data.access_token);
-
-          setUser(data.user);
-          await mergeGuestCartIntoBackend(data.user._id);
-
-          router.push(redirectTo);
-        }
+    isEmailExistMutate(
+      {
+        email: email,
       },
-      onError: (error) => {
-        console.log("error", error);
-      },
-    });
+      {
+        onSuccess: (data) => {
+          // console.log(data);
+
+          if (!data.exist) {
+            router.push(`/new-user?redir=${redirectTo}&email=${email}`);
+            return;
+          }
+
+          const params = new URLSearchParams({ email: data.userEmail });
+
+          if (redirectTo && redirectTo !== "/") {
+            params.set("redir", redirectTo);
+          }
+
+          router.push(`/signin-password?${params.toString()}`);
+        },
+      }
+    );
   };
+
+  // const handleSubmit = (e: FormEvent) => {
+  //   e.preventDefault();
+
+  //   if (isPending) return;
+
+  //   mutate(formData, {
+  //     onSuccess: async (data) => {
+  //       if (data) {
+  //         Cookies.set("token", data.access_token);
+
+  //         setUser(data.user);
+  //         await mergeGuestCartIntoBackend(data.user._id);
+
+  //         router.push(redirectTo);
+  //       }
+  //     },
+  //     onError: (error) => {
+  //       console.log("error", error);
+  //     },
+  //   });
+  // };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardTitle className="text-xl">
+            {/* Welcome back */}
+            Sign in or create account
+          </CardTitle>
           <CardDescription>
-            Login with your Apple or Google account
+            {/* Login with your Apple or Google account */}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="grid gap-6">
-              <div className="flex flex-col gap-4">
+              {/* <div className="flex flex-col gap-4">
                 <Button variant="outline" className="w-full">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path
@@ -99,15 +134,15 @@ export function SigninForm({
                   </svg>
                   Login with Google
                 </Button>
-              </div>
-              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+              </div> */}
+              {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-background px-2 text-muted-foreground">
                   Or continue with
                 </span>
-              </div>
+              </div> */}
               <div className="grid gap-6">
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">Enter your email</Label>
                   <Input
                     id="email"
                     type="email"
@@ -117,7 +152,7 @@ export function SigninForm({
                     required
                   />
                 </div>
-                <div className="grid gap-2">
+                {/* <div className="grid gap-2">
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
                     <a
@@ -134,10 +169,14 @@ export function SigninForm({
                     required
                     onChange={handleSigninChange}
                   />
-                </div>
-                <Button type="submit" className="w-full" disabled={isPending}>
-                  {isPending && <Loader className="animate-spin" />}
-                  Login
+                </div> */}
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isEmailExistPending}
+                >
+                  {isEmailExistPending && <Loader className="animate-spin" />}
+                  {isEmailExistPending ? "Submitting" : "Submit"}
                 </Button>
               </div>
               <div className="text-center text-sm">

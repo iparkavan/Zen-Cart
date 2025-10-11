@@ -3,9 +3,9 @@ import { ExpressHandler } from "../@types/express.types";
 import { HTTPSTATUS } from "../config/http.config";
 import { asyncHandler } from "../middlewares/asyncHandler.middleware";
 import {
+  isEmailExistService,
   registerAsCustomerService,
   registerAsSellerService,
-  verifyEmailService,
 } from "../services/auth.service";
 import {
   customerAdditionalInfoSchema,
@@ -83,11 +83,11 @@ export const logoutController: ExpressHandler = asyncHandler(
   }
 );
 
-export const verifyEmailController: ExpressHandler = asyncHandler(
+export const isEmailExistController: ExpressHandler = asyncHandler(
   async (req, res, next) => {
     const body = verifyEmailSchema.parse({ ...req.body });
 
-    const { exist, userEmail } = await verifyEmailService(body);
+    const { exist, userEmail } = await isEmailExistService(body);
 
     return res.status(HTTPSTATUS.OK).json({
       message: "Email verified successfully",
@@ -138,7 +138,3 @@ export const registerAsSellerController: ExpressHandler = asyncHandler(
     });
   }
 );
-
-// export const googleLoginCallback = asyncHandler(async (req, res, next) => {
-
-// });

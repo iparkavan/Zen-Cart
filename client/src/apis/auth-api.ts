@@ -23,3 +23,14 @@ export const getCurrentUserQueryFn =
     const res = await axiosInstance.get(`/user/current-user`);
     return res.data;
   };
+
+export const checkEmailExistMutationFn = async (data: {
+  email: string;
+}): Promise<{
+  message: string;
+  exist: boolean;
+  userEmail: string;
+}> => {
+  const res = await axiosInstance.post(`/auth/verify-email`, data);
+  return res.data;
+};

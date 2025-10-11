@@ -1,11 +1,11 @@
 import { Router } from "express";
 import {
   googleLoginCallback,
+  isEmailExistController,
   loginController,
   logoutController,
   registerAsCustomerController,
   registerAsSellerController,
-  verifyEmailController,
 } from "../controllers/auth.controller";
 import passport from "passport";
 import { config } from "../config/app.config";
@@ -34,9 +34,10 @@ authRoutes.get(
 );
 
 authRoutes.post(`/login`, loginController);
+
 authRoutes.post(`/logout`, logoutController);
 
-authRoutes.post("/verify-email", verifyEmailController);
+authRoutes.post("/verify-email", isEmailExistController);
 
 authRoutes.post("/customer-registration", registerAsCustomerController);
 

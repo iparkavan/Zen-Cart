@@ -1,4 +1,8 @@
-import { signinMutationFn, signupMutationFn } from "@/apis/auth-api";
+import {
+  checkEmailExistMutationFn,
+  signinMutationFn,
+  signupMutationFn,
+} from "@/apis/auth-api";
 import { useMutation } from "@tanstack/react-query";
 
 export const useSignin = () => {
@@ -12,5 +16,12 @@ export const useSignUp = () => {
   return useMutation({
     mutationKey: ["sign-up"],
     mutationFn: signupMutationFn,
+  });
+};
+
+export const useIsEmailExist = () => {
+  return useMutation({
+    mutationKey: ["is-email-exist"],
+    mutationFn: checkEmailExistMutationFn,
   });
 };
