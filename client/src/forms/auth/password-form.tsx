@@ -21,10 +21,6 @@ import Cookies from "js-cookie";
 import { useUserStore } from "@/stores/user-info-store";
 import { mergeGuestCartIntoBackend } from "@/hooks/cart-hook-logic/cart-logic-hooks";
 
-// interface PasswordFormProps extends React.ComponentPropsWithoutRef<"div"> {
-//   className?: string;
-// }
-
 export const PasswordForm = ({
   className,
   ...props
@@ -87,6 +83,7 @@ export const PasswordForm = ({
         <p className="text-sm text-center font-semibold text-red-600">
           {error && error}
         </p>
+
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="grid gap-6">
@@ -112,10 +109,10 @@ export const PasswordForm = ({
                 <Button
                   type="submit"
                   className="w-full"
-                  //  disabled={isPending}
+                  disabled={isSignInPending}
                 >
-                  {/* {isPending && <Loader className="animate-spin" />} */}
-                  Login
+                  {isSignInPending && <Loader className="animate-spin" />}
+                  {isSignInPending ? "Logging in" : "Login"}
                 </Button>
               </div>
               <div className="text-center text-sm">

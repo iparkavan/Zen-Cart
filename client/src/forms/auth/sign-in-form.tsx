@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { IFormDataType } from "@/schema/auth-schema";
+
 import { useIsEmailExist, useSignin } from "@/hooks/auth-hooks";
 import { Loader } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";

@@ -12,45 +12,57 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { IFormDataType } from "@/schema/auth-schema";
-import { useSignin, useSignUp } from "@/hooks/auth-hooks";
+import { signupSchema, SignupSchemaType } from "@/schema/auth-schema";
+import { useSellerSignUp, useSignin } from "@/hooks/auth-hooks";
 import { Loader } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import Cookies from "js-cookie";
 
-export function SignUpForm({
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { mergeGuestCartIntoBackend } from "@/hooks/cart-hook-logic/cart-logic-hooks";
+import { useUserStore } from "@/stores/user-info-store";
+
+export function BusinessSignUpForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [formData, setFormData] = useState<IFormDataType>({
-    email: "",
-    password: "",
-  });
-
+  const searchParams = useSearchParams();
   const router = useRouter();
 
-  const { mutate, isPending } = useSignUp();
+  const [error, setError] = useState("");
 
-  const handleSignUpChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupSchemaType>({
+    resolver: zodResolver(signupSchema),
+  });
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  const { setUser } = useUserStore();
 
+  const { mutate, isPending } = useSellerSignUp();
+  const redirectTo = searchParams.get("redir") || "/";
+
+  const onSubmit = (data: SignupSchemaType) => {
     if (isPending) return;
 
-    mutate(formData, {
-      onSuccess: (data) => {
+    mutate(data, {
+      onSuccess: async (data) => {
         if (data) {
-          router.push(`/`);
+          Cookies.set("token", data.access_token);
+
+          setUser(data.user);
+          await mergeGuestCartIntoBackend(data.user._id);
+
+          router.push(redirectTo);
+          // router.push(`/`);
         }
       },
       onError: (error) => {
         console.log("error", error);
+        setError("Something went wrong! Please try again.");
       },
     });
   };
@@ -66,8 +78,9 @@ export function SignUpForm({
             Login with your Apple or Google account
           </CardDescription> */}
         </CardHeader>
+        {error && <p className="text-red-600 font-semibold">{error}</p>}
         <CardContent>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid gap-6">
               {/* <div className="flex flex-col gap-4">
                 <Button variant="outline" className="w-full">
@@ -89,33 +102,45 @@ export function SignUpForm({
                   Login with Google
                 </Button>
               </div> */}
-              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                {/* <span className="relative z-10 bg-background px-2 text-muted-foreground">
+              {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+                <span className="relative z-10 bg-background px-2 text-muted-foreground">
                   Or continue with
-                </span> */}
-              </div>
+                </span>
+              </div> */}
               <div className="grid gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="name">Name</Label>
                   <Input
                     id="name"
-                    type="name"
-                    name="name"
-                    placeholder="m@example.com"
-                    onChange={handleSignUpChange}
-                    required
+                    type="text"
+                    // name="name"
+                    {...register("name")}
+                    // placeholder="m@example.com"
+                    // onChange={handleSignUpChange}
+                    // required
                   />
+                  {errors.name && (
+                    <p className="text-red-500 text-sm">
+                      {errors.name.message}
+                    </p>
+                  )}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
-                    name="email"
+                    // name="email"
+                    {...register("email")}
                     placeholder="m@example.com"
-                    onChange={handleSignUpChange}
-                    required
+                    // onChange={handleSignUpChange}
+                    // required
                   />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
                 <div className="grid gap-2">
                   <div className="flex items-center">
@@ -124,10 +149,16 @@ export function SignUpForm({
                   <Input
                     id="password"
                     type="password"
-                    name="password"
-                    required
-                    onChange={handleSignUpChange}
+                    // name="password"
+                    {...register("password")}
+                    // required
+                    // onChange={handleSignUpChange}
                   />
+                  {errors.password && (
+                    <p className="text-red-500 text-sm">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
 
                 <Button type="submit" className="w-full" disabled={isPending}>
@@ -136,7 +167,7 @@ export function SignUpForm({
                 </Button>
               </div>
               <div className="text-center text-sm">
-                Buying for work? &nbsp;
+                Already have an account? &nbsp;
                 <a
                   href="/signin"
                   className="hover:underline text-[#0c3353] font-semibold"

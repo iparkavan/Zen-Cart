@@ -1,7 +1,8 @@
 import {
   checkEmailExistMutationFn,
   signinMutationFn,
-  signupMutationFn,
+  signupCustomerMutationFn,
+  signupSellerMutationFn,
 } from "@/apis/auth-api";
 import { useMutation } from "@tanstack/react-query";
 
@@ -12,10 +13,17 @@ export const useSignin = () => {
   });
 };
 
-export const useSignUp = () => {
+export const useSellerSignUp = () => {
   return useMutation({
-    mutationKey: ["sign-up"],
-    mutationFn: signupMutationFn,
+    mutationKey: ["seller-sign-up"],
+    mutationFn: signupSellerMutationFn,
+  });
+};
+
+export const useCustomerSignUp = () => {
+  return useMutation({
+    mutationKey: ["customer-sign-up"],
+    mutationFn: signupCustomerMutationFn,
   });
 };
 

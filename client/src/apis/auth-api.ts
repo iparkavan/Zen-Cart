@@ -13,7 +13,7 @@ export const signinMutationFn = async (
   return res.data;
 };
 
-export const signupMutationFn = async (data: ISignUpType) => {
+export const signupSellerMutationFn = async (data: ISignUpType) => {
   const res = await axiosInstance.post(`/auth/seller-registration`, data);
   return res.data;
 };
@@ -32,5 +32,10 @@ export const checkEmailExistMutationFn = async (data: {
   userEmail: string;
 }> => {
   const res = await axiosInstance.post(`/auth/verify-email`, data);
+  return res.data;
+};
+
+export const signupCustomerMutationFn = async (data: ISignUpType) => {
+  const res = await axiosInstance.post(`/auth/customer-registration`, data);
   return res.data;
 };
