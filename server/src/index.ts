@@ -14,9 +14,16 @@ import { isAuthenticated } from "./middlewares/isAuthenticated.middleware";
 import { validateSeller } from "./middlewares/validateSeller.middleware";
 import categoryRoutes from "./routes/category.routes";
 import cartRoutes from "./routes/cart.routes";
+import orderRoutes from "./routes/order.routes";
+import paymentRoutes from "./routes/payment.routes";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
+
+// app.use(
+//   "/api/payments/razorpay/webhook",
+//   express.raw({ type: "application/json" })
+// );
 
 app.use(express.json());
 
@@ -52,6 +59,10 @@ app.use(`${BASE_PATH}/products`, productRoutes);
 app.use(`${BASE_PATH}/category`, categoryRoutes);
 
 app.use(`${BASE_PATH}/cart`, isAuthenticated, cartRoutes);
+
+app.use(`${BASE_PATH}/orders`, isAuthenticated, orderRoutes);
+
+app.use(`${BASE_PATH}/payments`, isAuthenticated, paymentRoutes);
 
 app.use(errorHandler);
 

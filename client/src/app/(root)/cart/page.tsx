@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -16,6 +16,8 @@ import {
 import { useUserStore } from "@/stores/user-info-store";
 import { useGuestCartStore } from "@/stores/cart-info-store";
 import { useRemoveItemWithCart } from "@/hooks/cart-hook-logic/cart-logic-hooks";
+import CheckoutModal from "@/components/dummy/razorpay-button";
+import { useOrderStore } from "@/stores/order-store";
 // import { useToast } from "@/hooks/use-toast";
 
 const Cart = () => {
@@ -23,17 +25,9 @@ const Cart = () => {
   const { user } = useUserStore();
   const router = useRouter();
   const { data } = useGetAllCartItems();
-  // const { addItem } = useCartInfoStore();
-  // const {} = useAddToCartWithGuest();
+  const { orderSummary, setOrderSummary } = useOrderStore();
 
   const { items: guestCartItems } = useGuestCartStore();
-
-  // const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
-
-  const { mutate: addAndRemoveToCartMutate } = useAddAndRemoveToCart();
-
-  // const { mutate: deleteMutate, isPending: isDeletePending } =
-  //   useDeleteCartItem();
 
   const {
     deleteItemFromTheCart,
@@ -49,17 +43,38 @@ const Cart = () => {
     deleteItemFromTheCart(id);
   };
 
-  const subtotal =
-    cartItems && cartItems.length > 0
-      ? cartItems.reduce(
-          (sum, item) => sum + item.productId.originalPrice * item.quantity,
-          0
-        )
-      : 0;
+  // const [totalAmount, setTotalAmount] = useState(0);
 
-  const shipping = subtotal > 100 ? 0 : 9.99;
-  const tax = subtotal * 0.08; // 8% tax
-  const total = subtotal + shipping + tax;
+  useEffect(() => {
+    if (!cartItems || cartItems.length === 0) {
+      setOrderSummary({ subtotal: 0, shipping: 0, tax: 0, total: 0 });
+      return;
+    }
+
+    const subtotal = cartItems.reduce(
+      (sum, item) => sum + item.productId.originalPrice * item.quantity,
+      0
+    );
+    const shipping = subtotal > 100 ? 0 : 9.99;
+    const tax = subtotal * 0.08;
+    const total = subtotal + shipping + tax;
+
+    setOrderSummary({ subtotal, shipping, tax, total });
+  }, [cartItems]);
+
+  console.log("Order Summary in Cart Page:", orderSummary);
+  // const subtotal =
+  //   cartItems && cartItems.length > 0
+  //     ? cartItems.reduce(
+  //         (sum, item) => sum + item.productId.originalPrice * item.quantity,
+  //         0
+  //       )
+  //     : 0;
+
+  // const shipping = subtotal > 100 ? 0 : 9.99;
+  // const tax = subtotal * 0.08; // 8% tax
+  // const total = subtotal + shipping + tax;
+
   const itemCount = cartItems
     ? cartItems.reduce((sum, item) => sum + item.quantity, 0)
     : 0;
@@ -133,29 +148,31 @@ const Cart = () => {
                     <CardContent className="space-y-4">
                       <div className="flex justify-between">
                         <span>Subtotal ({itemCount} items)</span>
-                        <span>${subtotal.toFixed(2)}</span>
+                        <span>${orderSummary?.subtotal.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Shipping</span>
                         <span>
-                          {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+                          {orderSummary?.shipping === 0
+                            ? "FREE"
+                            : `$${orderSummary?.shipping.toFixed(2)}`}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Tax</span>
-                        <span>${tax.toFixed(2)}</span>
+                        <span>${orderSummary?.tax.toFixed(2)}</span>
                       </div>
                       {/* <Separator /> */}
                       <div className="flex justify-between text-lg font-semibold">
                         <span>Total</span>
-                        <span>${total.toFixed(2)}</span>
+                        <span>${orderSummary?.total.toFixed(2)}</span>
                       </div>
-                      {subtotal < 100 && (
-                        <p className="text-sm text-muted-foreground">
-                          Add ${(100 - subtotal).toFixed(2)} more for free
-                          shipping!
-                        </p>
-                      )}
+                      {/* {orderSummary?.subtotal < 100 && (
+                          <p className="text-sm text-muted-foreground">
+                            Add ${(100 - orderSummary?.subtotal).toFixed(2)} more
+                            for free shipping!
+                          </p>
+                        )} */}
                       <Button
                         className="w-full"
                         size="lg"
@@ -163,6 +180,7 @@ const Cart = () => {
                       >
                         Proceed to Checkout
                       </Button>
+                      {/* <CheckoutModal orderId={} amount={12} /> */}
                       <p className="text-xs text-muted-foreground text-center">
                         Secure checkout with SSL encryption
                       </p>
