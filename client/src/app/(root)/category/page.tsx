@@ -3,10 +3,24 @@ import axiosServer from "@/lib/axios-server";
 import { ProductsApiResponseType } from "@/types/product-types";
 import React from "react";
 
-const page = async () => {
+interface CategoryPageProps {
+  searchParams: { ref?: string };
+}
+
+const page = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ ref?: string }>;
+}) => {
   const axios = await axiosServer();
 
-  const res = await axios.get<ProductsApiResponseType>(`/products/all`);
+  const params = await searchParams;
+
+  const categoryRef = params?.ref || "all";
+
+  const res = await axios.get<ProductsApiResponseType>(`/categories`, {
+    params: { category: categoryRef },
+  });
 
   const products = res.data.products;
 

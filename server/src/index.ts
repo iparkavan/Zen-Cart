@@ -56,7 +56,7 @@ app.use(`${BASE_PATH}/user`, isAuthenticated, userRoutes);
 
 app.use(`${BASE_PATH}/products`, productRoutes);
 
-app.use(`${BASE_PATH}/category`, categoryRoutes);
+app.use(`${BASE_PATH}/categories`, categoryRoutes);
 
 app.use(`${BASE_PATH}/cart`, isAuthenticated, cartRoutes);
 

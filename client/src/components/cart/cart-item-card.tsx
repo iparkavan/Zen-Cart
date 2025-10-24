@@ -41,7 +41,7 @@ CartItemCardProps) => {
               </p>
             )}
             <p className="text-primary font-bold text-lg">
-              ${item?.originalPrice.toFixed(2)}
+              &#8377; {item?.originalPrice.toFixed(2)}
             </p>
           </div>
 

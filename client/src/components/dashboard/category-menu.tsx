@@ -21,7 +21,7 @@ const CategoryMenu = () => {
       {categories?.map((category, index) => (
         <Link
           key={category._id}
-          href={`/category/${category.slug}`}
+          href={`/category?ref=${category.slug}`}
           className="hover:text-amazon-orange"
         >
           {category.name}
