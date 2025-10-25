@@ -24,7 +24,9 @@ paymentRoutes.post(
 );
 
 paymentRoutes.post("/", createPaymentController);
+
 paymentRoutes.get("/order/:orderId", getPaymentByOrderController);
+
 paymentRoutes.patch("/:id/status", updatePaymentStatusController);
 
 export default paymentRoutes;

@@ -4,6 +4,7 @@ import { razorpayConfig } from "../config/razorpay-config";
 import PaymentModel from "../models/payment.model";
 import OrderModel, { IOrder } from "../models/order.model";
 import { BadRequestException, NotFoundException } from "../utils/app-error";
+import CartModel from "../models/cart.model";
 
 interface PaymentInput {
   orderId: string;
@@ -101,9 +102,15 @@ export const verifyPaymentService = async (data: {
 
   if (!payment) throw new Error("Payment record not found");
 
-  await OrderModel.findByIdAndUpdate(payment.orderId, {
+  const order = await OrderModel.findByIdAndUpdate(payment.orderId, {
     paymentStatus: "PAID",
   });
+
+  // 4️⃣ After payment success — clear user’s cart
+  if (order && payment.userId) {
+    await CartModel.deleteMany({ userId: payment.userId });
+    console.log(`🛒 Cleared cart for user ${payment.userId}`);
+  }
 
   return { success: true, message: "Payment verified successfully" };
 };

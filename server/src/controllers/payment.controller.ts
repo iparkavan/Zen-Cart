@@ -1,3 +1,6 @@
+import crypto from "crypto";
+import PaymentModel from "../models/payment.model";
+import OrderModel from "../models/order.model";
 // src/controllers/payment.controller.ts
 import { Request, Response } from "express";
 import {
@@ -74,9 +77,6 @@ export const updatePaymentStatusController = asyncHandler(
 
 // ---------------------------------------------------------------------
 // controllers/payment.controller.ts
-import crypto from "crypto";
-import PaymentModel from "../models/payment.model";
-import OrderModel from "../models/order.model";
 
 export const razorpayWebhookController = asyncHandler(
   async (req: Request, res: Response) => {

@@ -2,40 +2,6 @@ import { Types } from "mongoose";
 import CartModel, { ICart } from "../models/cart.model";
 import { NotFoundException } from "../utils/app-error";
 
-// export const addProductsToCartSevice = async (body: {
-//   userId: string;
-//   productId: string;
-//   quantity: number;
-// }) => {
-//   const { userId, productId, quantity } = body;
-
-//   let cart: ICart | null = await CartModel.findOne({ userId });
-
-//   if (!cart) {
-//     cart = await CartModel.create({
-//       userId: new Types.ObjectId(userId),
-//       items: [{ productId: new Types.ObjectId(productId), quantity }],
-//     });
-//   } else {
-//     const existingItem = cart.items.find(
-//       (item) => item.productId.toString() === productId
-//     );
-
-//     if (existingItem) {
-//       existingItem.quantity += quantity;
-//     } else {
-//       cart.items.push({
-//         productId: new Types.ObjectId(productId),
-//         quantity,
-//       });
-//     }
-//   }
-
-//   await cart.save();
-
-//   return { cartItems: cart.items };
-// };
-
 export const addAndRemoveProductsToCartSevice = async (
   userId: string,
   body: {
@@ -97,14 +63,13 @@ export const addAndRemoveProductsToCartSevice = async (
 
 export const getAllCartItemsService = async (userId: string) => {
   const cart: ICart | null = await CartModel.findOne({ userId }).populate(
-    "items.productId" // populates product details
+    "items.productId"
   );
 
-  if (!cart) {
-    throw new NotFoundException("Cart not found for the user");
-  }
+  // ✅ Return [] if cart doesn’t exist or has no items
+  const cartItems = cart?.items?.length ? cart.items : [];
 
-  return { cartItems: cart.items };
+  return { cartItems };
 };
 
 export const deleteCartItemService = async (

@@ -20,6 +20,10 @@ const NavBar: React.FC = () => {
   const [isProfilePopoverOpen, setIsProfilePopoverOpen] =
     useState<boolean>(false);
 
+  const itemCount = user?._id
+    ? cartItems?.cartItems.length || 0
+    : guestCartItems.length || 0;
+
   return (
     <div className="h-full flex items-center justify-between">
       <div className="flex items-center justify-between gap-3">
@@ -78,11 +82,11 @@ const NavBar: React.FC = () => {
           >
             <div className="relative">
               <ShoppingCart size={24} />
-              <span className="absolute -top-2 -right-2 bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                {user?._id
-                  ? cartItems?.cartItems.length
-                  : guestCartItems.length}
-              </span>
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                  {itemCount}
+                </span>
+              )}
             </div>
             <span className="ml-1 font-bold">Cart</span>
           </Link>

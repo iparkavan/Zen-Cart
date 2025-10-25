@@ -2,7 +2,7 @@ import {
   initiatePaymentMutationFn,
   verifyPaymentMutationFn,
 } from "@/apis/payment-apis";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const usePaymentInitiate = () => {
   return useMutation({
@@ -12,8 +12,13 @@ export const usePaymentInitiate = () => {
 };
 
 export const useVerifyPaymentInitiate = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ["verify-payment"],
     mutationFn: verifyPaymentMutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all-cart-items"] });
+    },
   });
 };

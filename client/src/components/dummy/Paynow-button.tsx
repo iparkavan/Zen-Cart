@@ -26,6 +26,7 @@ export default function PaynowButton({
     usePaymentInitiate();
   const { mutate: verifyPaymentMutate, isPending: isVerifyPaymentPending } =
     useVerifyPaymentInitiate();
+
   const { user } = useUserStore();
 
   const handlePayment = () => {
@@ -64,7 +65,7 @@ export default function PaynowButton({
                     // 4️⃣ Verify payment on backend
                     verifyPaymentMutate(response, {
                       onSuccess: () => {
-                        router.push("/orders");
+                        router.push("/payment-successfull");
                       },
 
                       onError: () => alert("❌ Payment verification failed!"),
