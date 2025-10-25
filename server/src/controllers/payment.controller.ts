@@ -16,6 +16,7 @@ export const initiatePaymentController = asyncHandler(
     const orderId = req.body.orderId;
 
     const data = await initiatePaymentService(orderId);
+
     res.status(HTTPSTATUS.OK).json({
       success: true,
       message: "Razorpay order created successfully",
@@ -28,6 +29,7 @@ export const initiatePaymentController = asyncHandler(
 export const verifyPaymentController = asyncHandler(
   async (req: Request, res: Response) => {
     const data = await verifyPaymentService(req.body);
+
     res.status(HTTPSTATUS.OK).json({
       success: true,
       message: "Payment verified successfully",

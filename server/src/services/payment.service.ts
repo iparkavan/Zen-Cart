@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { razorpayConfig } from "../config/razorpay-config";
 import PaymentModel from "../models/payment.model";
 import OrderModel, { IOrder } from "../models/order.model";
-import { NotFoundException } from "../utils/app-error";
+import { BadRequestException, NotFoundException } from "../utils/app-error";
 
 interface PaymentInput {
   orderId: string;
@@ -28,11 +28,28 @@ export const initiatePaymentService = async (orderId: string) => {
     throw new NotFoundException("Order not found");
   }
 
+  if (order.totalAmount < 1) {
+    throw new Error("Order total must be at least 1 INR for Razorpay");
+  }
+  const amountInPaise = Math.round(order.totalAmount * 100); // integer
+
+  if (amountInPaise < 100) {
+    throw new BadRequestException("Order total must be at least 1 INR");
+  }
+
   const options = {
-    amount: order.totalAmount * 100,
+    amount: amountInPaise,
     currency: "INR",
     receipt: `receipt_${order._id}`,
   };
+
+  // const amountInPaise = Math.round(Number(order.totalAmount) * 100);
+
+  // const options = {
+  //   amount: amountInPaise,
+  //   currency: "INR",
+  //   receipt: `receipt_${order._id}`,
+  // };
 
   const razorpayOrder = await razorpayConfig.orders.create(options);
 
@@ -54,7 +71,6 @@ export const initiatePaymentService = async (orderId: string) => {
 };
 
 // 2️⃣ Verify Payment Signature from Razorpay
-
 export const verifyPaymentService = async (data: {
   razorpay_order_id: string;
   razorpay_payment_id: string;

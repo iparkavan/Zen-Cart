@@ -4,7 +4,12 @@ import { Button } from "@/components/ui/button";
 import { useOrdersCreate } from "@/hooks/order-hooks";
 import { CartItem } from "@/types/cart-type";
 import { useUserStore } from "@/stores/user-info-store";
-import { usePaymentInitiate } from "@/hooks/payment-hooks";
+import {
+  usePaymentInitiate,
+  useVerifyPaymentInitiate,
+} from "@/hooks/payment-hooks";
+import { RazorpayOptionsTypes } from "@/types/payment-types";
+import { useRouter } from "next/navigation";
 
 export default function PaynowButton({
   cartItems,
@@ -13,15 +18,24 @@ export default function PaynowButton({
   cartItems: CartItem[];
   totalAmount: number;
 }) {
+  const router = useRouter();
+
   const { mutate: ordersMutate, isPending: isOrdersPending } =
     useOrdersCreate();
-
-  const { mutate: paymentMutate, isPending: isPaymentPending } =
+  const { mutate: initiatePaymentMutate, isPending: isPaymentPending } =
     usePaymentInitiate();
-
+  const { mutate: verifyPaymentMutate, isPending: isVerifyPaymentPending } =
+    useVerifyPaymentInitiate();
   const { user } = useUserStore();
 
-  const handlePayment = async () => {
+  const handlePayment = () => {
+    // ✅ Safety check to ensure Razorpay script is loaded
+    if (typeof window === "undefined" || !window.Razorpay) {
+      alert("Razorpay SDK not yet loaded. Please try again in a moment.");
+      return;
+    }
+
+    // 1️⃣ Create backend order
     ordersMutate(
       {
         customerId: user?._id || "",
@@ -30,55 +44,67 @@ export default function PaynowButton({
         shippingAddress: "123 Main St",
       },
       {
-        onSuccess: (data) => {
-          paymentMutate(
-            { orderId: data.order._id },
+        onSuccess: (orderData) => {
+          // 2️⃣ Create Razorpay order via backend
+          initiatePaymentMutate(
+            { orderId: orderData.order._id },
             {
-              onSuccess: (data) => {
-                console.log("Payment initiated:", data);
+              onSuccess: (res) => {
+                const data = res.data;
+
+                // 3️⃣ Configure Razorpay Checkout options
+                const options: RazorpayOptionsTypes = {
+                  key: data.key,
+                  amount: data.amount,
+                  currency: data.currency,
+                  order_id: data.orderId,
+                  name: "Your Store",
+                  description: "Order Payment",
+                  handler: function (response: any) {
+                    // 4️⃣ Verify payment on backend
+                    verifyPaymentMutate(response, {
+                      onSuccess: () => {
+                        router.push("/orders");
+                      },
+
+                      onError: () => alert("❌ Payment verification failed!"),
+                    });
+                  },
+                  prefill: {
+                    name: user?.name || "Guest User",
+                    email: user?.email || "guest@example.com",
+                  },
+                  theme: { color: "#0E7490" },
+                };
+
+                // 5️⃣ Open Razorpay checkout window
+                const rzp = new window.Razorpay(options);
+                rzp.open();
+              },
+              onError: (err) => {
+                console.error(err);
+                alert("❌ Failed to initiate payment");
               },
             }
           );
         },
+        onError: (err) => {
+          console.error(err);
+          alert("❌ Failed to create order");
+        },
       }
     );
-
-    // const { key, order } = data;
-
-    // 2️⃣ Initialize Razorpay Checkout
-    // const options = {
-    //   key,
-    //   amount: order.amount,
-    //   currency: "INR",
-    //   name: "Your Store Name",
-    //   description: "Test Transaction",
-    //   order_id: order.id,
-    //   handler: function (response: any) {
-    //     alert("Payment successful!");
-    //     console.log("Razorpay response:", response);
-    //   },
-    //   prefill: {
-    //     name: "John Doe",
-    //     email: "john@example.com",
-    //     contact: "9999999999",
-    //   },
-    //   theme: { color: "#3399cc" },
-    // };
-
-    // const razorpay = new (window as any).Razorpay(options);
-    // razorpay.open();
-
-    // setLoading(false);
   };
 
   return (
     <div className="p-10">
       <Button
-        disabled={isOrdersPending}
+        disabled={isOrdersPending || isPaymentPending || isVerifyPaymentPending}
         onClick={handlePayment}
-        // className="bg-blue-600 text-white px-6 py-3 rounded-md"
       >
-        {isOrdersPending ? "Processing..." : "Pay Now"}
+        {isOrdersPending || isPaymentPending || isVerifyPaymentPending
+          ? "Processing..."
+          : "Pay Now"}
       </Button>
     </div>
   );
