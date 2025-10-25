@@ -97,15 +97,16 @@ export default function PaynowButton({
   };
 
   return (
-    <div className="p-10">
-      <Button
-        disabled={isOrdersPending || isPaymentPending || isVerifyPaymentPending}
-        onClick={handlePayment}
-      >
-        {isOrdersPending || isPaymentPending || isVerifyPaymentPending
-          ? "Processing..."
-          : "Pay Now"}
-      </Button>
-    </div>
+    // <div className="p-10">
+    <Button
+      className="w-full hover-scale"
+      disabled={isOrdersPending || isPaymentPending || isVerifyPaymentPending}
+      onClick={handlePayment}
+    >
+      {isOrdersPending || isPaymentPending || isVerifyPaymentPending
+        ? "Processing..."
+        : "Pay Now"}
+    </Button>
+    // </div>
   );
 }
